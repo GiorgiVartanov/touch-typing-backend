@@ -15,7 +15,11 @@ const port = process.env.PORT || 5000
 
 connectDB()
 
-app.use(cors({ origin: process.env.CLIENT_URL }))
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+  })
+)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -23,7 +27,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/api/auth", authRoutes)
 app.use("/api/lesson", lessonRoutes)
 
-console.log(process.env.NODE_ENV)
+console.log(`client url : ${process.env.CLIENT_URL}`)
 
 app.use(errorHandler)
 
