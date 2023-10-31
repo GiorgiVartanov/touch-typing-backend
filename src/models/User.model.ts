@@ -15,6 +15,14 @@ export interface UserInterface extends Document {
     history: mongoose.Types.ObjectId[]
     completed: mongoose.Types.ObjectId[]
   }
+  typingSettings: {
+    selectedFont: "sans" | "serif"
+    amountOfShownLines: number
+    alignText: "Left" | "Center" | "Right"
+    fontSize: number
+    lineSpacing: number
+    letterSpacing: number
+  }
   settings: {
     preferredLanguage: "Eng" | "Geo"
     preferredTheme: "System Default" | "Dark" | "Light"
@@ -88,12 +96,37 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
         ref: "Lesson",
       },
     ],
-    completed: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Lesson",
-      },
-    ],
+  },
+  typingSettings: {
+    selectedFont: {
+      type: String,
+      enum: ["sans", "serif"],
+      default: "sans",
+    },
+    amountOfShownLines: {
+      type: Number,
+      default: 5,
+    },
+    alignText: {
+      type: String,
+      enum: ["Left", "Center", "Right"],
+      default: "Left",
+    },
+    fontSize: {
+      type: Number,
+      default: 1.25,
+      enum: [1, 1.25, 1.5, 1.75, 2, 2.25],
+    },
+    lineHeight: {
+      type: Number,
+      default: 1.25,
+      enum: [1, 1.25, 1.5, 1.75, 2, 2.25],
+    },
+    letterSpacing: {
+      type: Number,
+      default: 0,
+      enum: [0, 0.25, 0.5, 0.75, 1],
+    },
   },
   settings: {
     preferredLanguage: {
@@ -114,15 +147,10 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       enum: ["QWERTY"],
       default: "QWERTY",
     },
-    preferredTypingLanguage: {
-      type: String,
-      enum: ["Eng", "Geo"],
-      default: "Geo",
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now,
-    },
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
   },
 })
 

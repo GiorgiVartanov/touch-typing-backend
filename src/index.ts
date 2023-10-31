@@ -7,17 +7,20 @@ import connectDB from "./config/db"
 
 import authRoutes from "./routes/authRoutes"
 import lessonRoutes from "./routes/lessonRoutes"
+import typingSettingsRoutes from "./routes/typingSettingRoutes"
+import settingsRoutes from "./routes/settingsRoutes"
 
 dotenv.config()
 
 const app: Express = express()
-const port = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000
 
 connectDB()
 
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
+    credentials: true,
   })
 )
 
@@ -26,9 +29,11 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use("/api/auth", authRoutes)
 app.use("/api/lesson", lessonRoutes)
-
-console.log(`client url : ${process.env.CLIENT_URL}`)
+app.use("/api/typingsettings", typingSettingsRoutes)
+app.use("/api/settings", settingsRoutes)
 
 app.use(errorHandler)
 
-app.listen(port, () => console.log(`server started on port ${port}`))
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`)
+})
