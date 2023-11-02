@@ -8,7 +8,7 @@ import connectDB from "./config/db"
 import authRoutes from "./routes/authRoutes"
 import lessonRoutes from "./routes/lessonRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
-import settingsRoutes from "./routes/settingsRoutes"
+import appSettingsRoutes from "./routes/appSettingsRoutes"
 
 dotenv.config()
 
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/api/auth", authRoutes)
 app.use("/api/lesson", lessonRoutes)
 app.use("/api/typingsettings", typingSettingsRoutes)
-app.use("/api/settings", settingsRoutes)
+app.use("/api/appsettings", appSettingsRoutes)
 
 app.use(errorHandler)
 

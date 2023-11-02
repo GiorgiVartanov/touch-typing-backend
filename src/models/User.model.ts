@@ -17,13 +17,13 @@ export interface UserInterface extends Document {
   }
   typingSettings: {
     selectedFont: "sans" | "serif"
-    amountOfShownLines: number
-    alignText: "Left" | "Center" | "Right"
-    fontSize: number
-    lineSpacing: number
-    letterSpacing: number
+    amountOfShownLines: string
+    alignText: "left" | "center" | "right"
+    fontSize: string
+    lineSpacing: string
+    letterSpacing: string
   }
-  settings: {
+  appSettings: {
     preferredLanguage: "Eng" | "Geo"
     preferredTheme: "System Default" | "Dark" | "Light"
     isProfilePublic: boolean
@@ -104,31 +104,33 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       default: "sans",
     },
     amountOfShownLines: {
-      type: Number,
-      default: 5,
+      type: String,
+      default: "5",
+      enum: ["3", "4", "5", "6", "7"],
     },
     alignText: {
       type: String,
-      enum: ["Left", "Center", "Right"],
-      default: "Left",
+      enum: ["left", "center", "right"],
+      default: "left",
     },
     fontSize: {
-      type: Number,
-      default: 1.25,
-      enum: [1, 1.25, 1.5, 1.75, 2, 2.25],
+      type: String,
+      default: "Auto",
+      enum: ["Auto", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36"],
+      // auto will be 1.25rem, others will be in pixels
     },
     lineHeight: {
-      type: Number,
-      default: 1.25,
-      enum: [1, 1.25, 1.5, 1.75, 2, 2.25],
+      type: String,
+      default: "Auto",
+      enum: ["Auto", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36"],
     },
     letterSpacing: {
-      type: Number,
-      default: 0,
-      enum: [0, 0.25, 0.5, 0.75, 1],
+      type: String,
+      default: "0",
+      enum: ["0", "1", "2", "3", "4", "5", "6"],
     },
   },
-  settings: {
+  appSettings: {
     preferredLanguage: {
       type: String,
       enum: ["Eng", "Geo"],

@@ -3,8 +3,8 @@ import protect from "../middleware/authMiddleware"
 
 const router: Router = express.Router()
 
-import { setSettings } from "../controllers/settingsController"
+import { setAppSettings } from "../controllers/appSettingsController"
 
-router.post("/", protect, setSettings)
+router.post("/", protect, setAppSettings)
 
 export default router
