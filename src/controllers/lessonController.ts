@@ -4,6 +4,7 @@ import { ProtectedRequest } from "../middleware/authMiddleware"
 
 import Lesson from "../models/Lesson.model"
 
+// creates lesson for a passed values inside body
 export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   if (req.user.accountType !== "Admin") {
     res.status(400)
@@ -28,6 +29,7 @@ export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Resp
   res.status(200).json({ message: `${title} was added` })
 })
 
+// gets lessons for a passed text query (page system may be implemented latter)
 export const getLessons = asyncHandler(async (req: Request, res: Response) => {
   const { text } = req.query
 
@@ -73,6 +75,9 @@ export const getLessons = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ data: categorizedLessons })
 })
 
+export const getFakeWords = asyncHandler(async (req: Request, res: Response) => {})
+
+// returns lesson for a passed _id
 export const getLesson = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params
 

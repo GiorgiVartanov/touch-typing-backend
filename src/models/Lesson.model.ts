@@ -7,6 +7,7 @@ export interface LessonInterface extends Document {
   approximateDuration: number
   level: "Beginner" | "Intermediate" | "Expert" | "Advanced"
   text: string
+  wordSeparator?: string
 }
 
 const lessonSchema: Schema<LessonInterface> = new Schema<LessonInterface>({
@@ -34,6 +35,9 @@ const lessonSchema: Schema<LessonInterface> = new Schema<LessonInterface>({
   text: {
     type: String,
     required: true,
+  },
+  wordSeparator: {
+    type: String,
   },
 })
 
