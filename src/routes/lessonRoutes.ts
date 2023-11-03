@@ -5,7 +5,7 @@ const router: Router = express.Router()
 
 import { createLesson, getLessons, getFakeWords, getLesson } from "../controllers/lessonController"
 
-router.post("/create", createLesson)
+router.post("/create", protect, createLesson)
 router.get("/search", getLessons)
 router.get("/fakewords", getFakeWords)
 router.get("/:id", getLesson)
