@@ -33,7 +33,7 @@ const georgianLetters = [
   "ჯ",
   "ჰ",
 ]
-const generateFakeWordsByFrequency = (
+const generateFakeWords = (
   letter?: string,
   amountOfWords: number = 10,
   minAmountOfSyllables: number = 2,
@@ -67,7 +67,7 @@ const generateFakeWordsByFrequency = (
   return fakeWords.join(" ")
 }
 
-export default generateFakeWordsByFrequency
+export default generateFakeWords
 
 const generateRandomNumber = (min: number, max: number) => {
   if (min > max) return 0

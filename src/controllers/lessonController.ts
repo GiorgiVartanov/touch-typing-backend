@@ -88,16 +88,21 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
     maxLengthOfWord,
   } = req.query
 
-  const fakeWords = generateFakeWords(
-    (letter as string) || undefined,
-    Number(amount) || undefined,
-    Number(minAmountOfSyllables) || undefined,
-    Number(maxAmountOfSyllables) || undefined,
-    Number(minLengthOfWord) || undefined,
-    Number(maxLengthOfWord) || undefined
-  )
+  try {
+    const fakeWords = generateFakeWords(
+      (letter as string) || undefined,
+      Number(amount) || undefined,
+      Number(minAmountOfSyllables) || undefined,
+      Number(maxAmountOfSyllables) || undefined,
+      Number(minLengthOfWord) || undefined,
+      Number(maxLengthOfWord) || undefined
+    )
 
-  res.status(200).json({ data: fakeWords })
+    res.status(200).json({ data: fakeWords })
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
 })
 
 // returns lesson for a passed _id
