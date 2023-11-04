@@ -1,3 +1,6 @@
+import path from "path"
+import fs from "fs"
+
 const georgianLetters = [
   "ა",
   "ბ",
@@ -47,7 +50,12 @@ const generateFakeWords = (
 
   if (!letter) selectedLetter = georgianLetters[generateRandomNumber(0, georgianLetters.length - 1)]
 
-  const data = require(`../data/letters/${selectedLetter}.letter.json`)
+  const filePath = path.join(__dirname, "..", "data", "letters", `${selectedLetter}.letter.json`)
+
+  const data: { word: string; frequency: number; length: 2 } = JSON.parse(
+    fs.readFileSync(filePath, "utf8")
+  )
+
   const length = data.length
 
   for (let i = 0; i < amountOfWords; i++) {
