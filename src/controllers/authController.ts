@@ -41,13 +41,13 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        typingSettings: user.typingSettings,
-        appSettings: user.appSettings,
         friends: user.friends,
         completedAchievements: user.completedAchievements,
         pvpHistory: user.pvpHistory,
         lessons: user.lessons,
       },
+      appSettings: user.appSettings,
+      typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
   } else {
@@ -73,13 +73,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        typingSettings: user.typingSettings,
-        appSettings: user.appSettings,
         friends: user.friends,
         completedAchievements: user.completedAchievements,
         pvpHistory: user.pvpHistory,
         lessons: user.lessons,
       },
+      appSettings: user.appSettings,
+      typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
   } else {

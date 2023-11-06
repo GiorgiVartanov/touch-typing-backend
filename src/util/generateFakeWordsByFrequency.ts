@@ -13,7 +13,7 @@ const generateFakeWordsByFrequency = (
     (total: number, item: { word: string; frequency: number; letter: number }) =>
       total + item.frequency,
     0
-  ) // sum of all frequencies, (its probably better to do it without weights unless weights of some elements will be decreased)
+  ) // sum of all frequencies, (its probably better to do it without weights (frequencies) unless weights of some elements will be decreased (square or cubic root of their frequencies for example))
 
   const length = data.length
 

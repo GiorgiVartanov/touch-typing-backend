@@ -5,7 +5,7 @@ import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
 const availableTypingSettings = [
-  "selectedFont",
+  "font",
   "amountOfShownLines",
   "alignText",
   "fontSize",

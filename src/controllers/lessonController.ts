@@ -3,8 +3,46 @@ import asyncHandler from "express-async-handler"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
 import generateFakeWords from "../util/generateFakeWords"
+import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
+import Letter from "../models/Letter.model"
+
+const georgianLetters = [
+  "ა",
+  "ბ",
+  "გ",
+  "დ",
+  "ე",
+  "ვ",
+  "ზ",
+  "თ",
+  "ი",
+  "კ",
+  "ლ",
+  "მ",
+  "ნ",
+  "ო",
+  "პ",
+  "ჟ",
+  "რ",
+  "ს",
+  "ტ",
+  "უ",
+  "ფ",
+  "ქ",
+  "ღ",
+  "ყ",
+  "შ",
+  "ჩ",
+  "ც",
+  "ძ",
+  "წ",
+  "ჭ",
+  "ხ",
+  "ჯ",
+  "ჰ",
+]
 
 // creates lesson for a passed values inside body
 export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
@@ -88,9 +126,13 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
     maxLengthOfWord,
   } = req.query
 
+  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length)]
+
+  const letterItem = await Letter.findOne({ letter: desiredLetter })
+
   try {
     const fakeWords = generateFakeWords(
-      (letter as string) || undefined,
+      letterItem,
       Number(amount) || undefined,
       Number(minAmountOfSyllables) || undefined,
       Number(maxAmountOfSyllables) || undefined,

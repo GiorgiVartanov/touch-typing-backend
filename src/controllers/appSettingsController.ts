@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
-const availableAppSettings = ["preferredTheme", "isProfilePublic", "favoriteLayout"]
+const availableAppSettings = ["theme", "language"]
 
 export const setAppSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const { appSettingToChange, value } = req.body

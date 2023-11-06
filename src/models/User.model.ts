@@ -24,11 +24,8 @@ export interface UserInterface extends Document {
     letterSpacing: string
   }
   appSettings: {
-    preferredLanguage: "Eng" | "Geo"
-    preferredTheme: "System Default" | "Dark" | "Light"
-    isProfilePublic: boolean
-    favoriteLayout: "QWERTY" // others will be added later (or not)
-    preferredTypingLanguage: "Eng" | "Geo"
+    language: "Eng" | "Geo"
+    theme: "System Default" | "Dark" | "Light"
   }
   timestamp: Date
 }
@@ -98,7 +95,7 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     ],
   },
   typingSettings: {
-    selectedFont: {
+    font: {
       type: String,
       enum: ["sans", "serif"],
       default: "sans",
@@ -131,23 +128,15 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     },
   },
   appSettings: {
-    preferredLanguage: {
+    language: {
       type: String,
       enum: ["Eng", "Geo"],
+      default: "Geo",
     },
-    preferredTheme: {
+    theme: {
       type: String,
       enum: ["System Default", "Dark", "Light"],
       default: "System Default",
-    },
-    isProfilePublic: {
-      type: Boolean,
-      default: true,
-    },
-    favoriteLayout: {
-      type: String,
-      enum: ["QWERTY"],
-      default: "QWERTY",
     },
   },
   timestamp: {
