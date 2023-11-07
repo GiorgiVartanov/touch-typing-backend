@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import asyncHandler from "express-async-handler"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
-import generateFakeWords from "../util/generateFakeWords"
+import generateFakeWordsByFrequency from "../util/generateFakeWordsByFrequency"
 import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
@@ -131,7 +131,7 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
   const letterItem = await Letter.findOne({ letter: desiredLetter })
 
   try {
-    const fakeWords = generateFakeWords(
+    const fakeWords = generateFakeWordsByFrequency(
       letterItem,
       Number(amount) || undefined,
       Number(minAmountOfSyllables) || undefined,

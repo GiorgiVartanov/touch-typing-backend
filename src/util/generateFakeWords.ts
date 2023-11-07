@@ -1,3 +1,5 @@
+import generateRandomNumber from "./generateRandomNumber";
+
 // generated fake words for a passed props
 // black list is not added yet (will remove/change inappropriate words that will get generated, ideally it should check if inappropriate word is not a substring of a normal word (like english word class), but its not necessary)
 const generateFakeWords = (
@@ -37,9 +39,3 @@ const generateFakeWords = (
 }
 
 export default generateFakeWords
-
-const generateRandomNumber = (min: number, max: number) => {
-  if (min > max) return 0
-
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
