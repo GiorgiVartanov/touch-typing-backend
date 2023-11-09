@@ -7,6 +7,7 @@ import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
 import Letter from "../models/Letter.model"
+import generateNGrams from "../util/generateNGrams"
 
 const georgianLetters = [
   "ა",
@@ -126,7 +127,7 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
     maxLengthOfWord,
   } = req.query
 
-  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length)]
+  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length - 1)]
 
   const letterItem = await Letter.findOne({ letter: desiredLetter })
 
@@ -159,4 +160,68 @@ export const getLesson = asyncHandler(async (req: Request, res: Response) => {
   }
 
   res.status(200).json(data)
+})
+
+//Generates a lesson for training on a specific letter. 
+export const getSpecificTraining = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    letter = "ა",
+    level = "Beginner", 
+    subLevel = 1,
+    wordCount = 20,
+  } = req.query
+
+  const desiredKey = {"Beginner" : 0 , "Intermediate" : 1, "Advanced": 2, "Expert": 3}
+  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length - 1)]
+  const letterItem = await Letter.findOne({ letter: desiredLetter })
+
+  try {
+    const text : String[] = []
+
+    //4 different subLevels
+    const N_Grams : String[][] = Array.from({length:4}).map(()=>Array<String>())
+
+    //4 different levels
+    const levelNumber : number = desiredKey[String(level)]
+
+    //filling in N_Grams according to the "level."
+    generateNGrams(letterItem, 2).forEach(word=>N_Grams[0].push(word))
+
+    if( 1 <= levelNumber ){
+      generateNGrams(letterItem, 3).forEach(word=>N_Grams[1].push(word))
+
+      if( 2 <= levelNumber ){
+        generateNGrams(letterItem, 4).forEach(word=>N_Grams[2].push(word))
+
+        //expert level has all the syllables of length higher than 4 + n-grams
+        if(levelNumber === 3)
+          letterItem.syllableList.forEach(element => {
+            if (element.word.length > 4) 
+              N_Grams[3].push(element.word)
+          });
+      }
+    }
+
+    const randArr : Array<number> = [1, 2, 3, 4, 5]
+    for(let i = 0; i < Number(wordCount); ++i){
+      //higher probability of getting longer words.
+      const sylAmount : number = randArr[Math.floor((Number(subLevel) + 1) * (1 - Math.random()**(4/3)) + Math.random()/4)]
+
+      let tmpWord : string = ""
+
+      for(let j = 0; j < sylAmount; ++j){
+        //higher probability of getting longer syllables (accoring to the "level")
+        const sylLength : number = randArr[Math.floor(levelNumber * (1 - Math.random()**(3/2)))] - 1
+
+        tmpWord += N_Grams[sylLength][Math.floor( N_Grams[sylLength].length * Math.random())]
+      }      
+
+      text.push(tmpWord)
+    }
+
+    res.status(200).json({ data: text.join(" ") })
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
 })
