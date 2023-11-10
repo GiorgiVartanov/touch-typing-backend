@@ -18,6 +18,7 @@ const letterSchema: Schema<LetterInterface> = new Schema<LetterInterface>({
   },
   syllableList: [
     {
+      _id: false,
       word: {
         type: String,
         required: true,

@@ -3,47 +3,10 @@ import asyncHandler from "express-async-handler"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
 import generateFakeWordsByFrequency from "../util/generateFakeWordsByFrequency"
-import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
 import Letter from "../models/Letter.model"
 import generateNGrams from "../util/generateNGrams"
-
-const georgianLetters = [
-  "ა",
-  "ბ",
-  "გ",
-  "დ",
-  "ე",
-  "ვ",
-  "ზ",
-  "თ",
-  "ი",
-  "კ",
-  "ლ",
-  "მ",
-  "ნ",
-  "ო",
-  "პ",
-  "ჟ",
-  "რ",
-  "ს",
-  "ტ",
-  "უ",
-  "ფ",
-  "ქ",
-  "ღ",
-  "ყ",
-  "შ",
-  "ჩ",
-  "ც",
-  "ძ",
-  "წ",
-  "ჭ",
-  "ხ",
-  "ჯ",
-  "ჰ",
-]
 
 // creates lesson for a passed values inside body
 export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
@@ -127,7 +90,7 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
     maxLengthOfWord,
   } = req.query
 
-  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length - 1)]
+  const desiredLetter = letter || "all"
 
   const letterItem = await Letter.findOne({ letter: desiredLetter })
 
@@ -172,7 +135,7 @@ export const getSpecificTraining = asyncHandler(async (req: Request, res: Respon
   } = req.query
 
   const desiredKey = {"Beginner" : 0 , "Intermediate" : 1, "Advanced": 2, "Expert": 3}
-  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length - 1)]
+  const desiredLetter = letter
   const letterItem = await Letter.findOne({ letter: desiredLetter })
 
   try {
@@ -201,24 +164,24 @@ export const getSpecificTraining = asyncHandler(async (req: Request, res: Respon
           });
       }
     }
+    if(N_Grams[0].length != 0) {
+      const randArr : Array<number> = [1, 2, 3, 4, 5]
+      for(let i = 0; i < Number(wordCount); ++i){
+        //higher probability of getting longer words.
+        const sylAmount : number = randArr[Math.floor((Number(subLevel) + 1) * (1 - Math.random()**(4/3)) + Math.random()/4)]
 
-    const randArr : Array<number> = [1, 2, 3, 4, 5]
-    for(let i = 0; i < Number(wordCount); ++i){
-      //higher probability of getting longer words.
-      const sylAmount : number = randArr[Math.floor((Number(subLevel) + 1) * (1 - Math.random()**(4/3)) + Math.random()/4)]
+        let tmpWord : string = ""
 
-      let tmpWord : string = ""
+        for(let j = 0; j < sylAmount; ++j){
+          //higher probability of getting longer syllables (accoring to the "level")
+          const sylLength : number = randArr[Math.floor(levelNumber * (1 - Math.random()**(3/2)))] - 1
 
-      for(let j = 0; j < sylAmount; ++j){
-        //higher probability of getting longer syllables (accoring to the "level")
-        const sylLength : number = randArr[Math.floor(levelNumber * (1 - Math.random()**(3/2)))] - 1
+          tmpWord += N_Grams[sylLength][Math.floor( N_Grams[sylLength].length * Math.random())]
+        }      
 
-        tmpWord += N_Grams[sylLength][Math.floor( N_Grams[sylLength].length * Math.random())]
-      }      
-
-      text.push(tmpWord)
+        text.push(tmpWord)
+      }
     }
-
     res.status(200).json({ data: text.join(" ") })
   } catch (error) {
     res.status(400)
