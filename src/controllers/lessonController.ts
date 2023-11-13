@@ -7,6 +7,7 @@ import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
 import Letter from "../models/Letter.model"
+import generateFakeWordsIncremental from "../util/generateFakeWordsIncremental"
 
 const georgianLetters = [
   "ა",
@@ -43,6 +44,8 @@ const georgianLetters = [
   "ჯ",
   "ჰ",
 ]
+
+const georgianLettersByFrequency = ['ა', 'ი', 'ე', 'ს', 'რ', 'მ', 'ო', 'დ', 'ვ', 'ნ', 'ლ', 'ბ', 'უ', 'თ', 'გ', 'ხ', 'შ', 'ც', 'კ', 'ტ', 'ქ', 'ყ', 'ზ', 'წ', 'ფ', 'ჩ', 'ღ', 'პ', 'ძ', 'ჯ', 'ჭ', 'ჰ', 'ჟ']
 
 // creates lesson for a passed values inside body
 export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
@@ -141,6 +144,35 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
     )
 
     res.status(200).json({ data: fakeWords })
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
+})
+
+// returns syllables for incremental learning
+export const getFakeWordsIncremental = asyncHandler(async (req: Request, res: Response) => {
+  let {
+    activeletter,
+    amount,
+  } = req.query
+
+  // first N (5) letters come together by default, meaning all of them could appear in syllables by default
+  const defaultStarterLetters = georgianLettersByFrequency.slice(0, 5)
+
+  if (defaultStarterLetters.includes(activeletter as string)) {
+    activeletter = defaultStarterLetters[defaultStarterLetters.length-1]
+  }
+
+  const activLetterSyllablesObj = await Letter.findOne({ letter: activeletter })
+
+  try {
+    const fakeWordsIncremental = generateFakeWordsIncremental(
+      activLetterSyllablesObj,
+      Number(amount) || undefined,
+    )
+
+    res.status(200).json({ data: fakeWordsIncremental })
   } catch (error) {
     res.status(400)
     throw new Error(error)
