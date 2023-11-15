@@ -7,7 +7,7 @@ import { createLesson, getLessons, getFakeWords, getLesson } from "../controller
 
 router.post("/create", protect, createLesson)
 router.get("/search", getLessons)
-router.get("/fakewords", getFakeWords)
+router.get("/fakewords/", getFakeWords)
 router.get("/:id", getLesson)
 
 export default router

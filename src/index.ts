@@ -9,11 +9,19 @@ import authRoutes from "./routes/authRoutes"
 import lessonRoutes from "./routes/lessonRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import appSettingsRoutes from "./routes/appSettingsRoutes"
+import { ServerSocket } from "./socket/socket"
+import http from 'http'
 
 dotenv.config()
 
 const app: Express = express()
 const PORT = process.env.PORT || 5000
+
+//server handling
+const httpServer = http.createServer(app);
+
+//start the socket
+new ServerSocket(httpServer);
 
 connectDB()
 
@@ -34,6 +42,4 @@ app.use("/api/appsettings", appSettingsRoutes)
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`)
-})
+httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`));

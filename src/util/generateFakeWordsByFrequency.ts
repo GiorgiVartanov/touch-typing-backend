@@ -1,46 +1,72 @@
+/*
+  ---- UndeRz ----
+  I haven't come up with the perfect solution and, therefore, will proceed with an heuristic:
+  ** prioritise syllable count over word length, that is, 
+  ++ if both constraints can't be satisfied, I'll make the syllable count happy. (but I'll try to make both "content").
+*/
+import generateRandomNumber from "./generateRandomNumber"
+
 const generateFakeWordsByFrequency = (
-  letter: string,
+  data: {
+    letter: string
+    amount: number
+    syllableList: { word: string; frequency: number; length: number }[]
+  },
   amountOfWords: number = 10,
   minAmountOfSyllables: number = 2,
   maxAmountOfSyllables: number = 4,
-  minLengthOfWord: number = 3,
-  maxLengthOfWord: number = 10
-): string[] => {
-  const fakeWords = []
-  const data = require(`../data/letters/${letter}.letter.json`)
+  minLengthOfWord: number = 3, 
+  maxLengthOfWord: number = 10 // has been implemented thouroughly with a great precision (subtleties)
+): string  => {
+  const fakeWords = []  
 
-  const totalWeight = data.reduce(
-    (total: number, item: { word: string; frequency: number; letter: number }) =>
-      total + item.frequency,
-    0
-  ) // sum of all frequencies, (its probably better to do it without weights (frequencies) unless weights of some elements will be decreased (square or cubic root of their frequencies for example))
+  //I can try this many times to satisfy every single restriction.
+  const tryThisManyTimes = 100
 
-  const length = data.length
+  //prefixSum "partitions" the syllables by frequencies. (used for binary search afterwards).
+  const prefixSum = []
+  data.syllableList.forEach((val,index)=>
+    prefixSum.push(prefixSum.length ? val.frequency + prefixSum[index-1] : val.frequency)
+  )
+
+  const length = data.syllableList.length
+
+  const totalWeight = prefixSum[length - 1]
 
   for (let i = 0; i < amountOfWords; i++) {
     const amountOfSyllables = generateRandomNumber(minAmountOfSyllables, maxAmountOfSyllables)
 
     let generatedWord = ""
 
-    for (let j = 0; j < amountOfSyllables; j++) {
-      const syllableWeightToAdd = generateRandomNumber(0, totalWeight - 1)
-
-      for (let k = 0; k < length; k++) {
-        if (syllableWeightToAdd > data[k].frequency) {
-          generatedWord += data[k].word
-          break
-        }
+    for (let j = 0, k = 0; j < amountOfSyllables; ++j) {
+      const uniformRandom = generateRandomNumber(1, totalWeight)
+      
+      //the syllable is sought by binary search
+      let l = 0
+      let r = length
+      while( l + 1 < r ){
+        let m = Math.floor( (l + r) / 2 )
+        if (prefixSum[m] < uniformRandom)
+          l = m + 1
+        else 
+          r = m;
       }
+
+      //if the word length constraint isn't satisfied, I'll try again for at most "tryThisManyTimes"...
+      if(generatedWord.length + data.syllableList[l].word.length > maxLengthOfWord && k < tryThisManyTimes){
+        ++k; --j;
+        continue;
+      } else if(j === amountOfSyllables - 1 && generatedWord.length + data.syllableList[l].word.length < minLengthOfWord) {
+        ++k; --j;
+        continue;
+      }
+      generatedWord += data.syllableList[l].word
     }
 
     fakeWords.push(generatedWord)
   }
 
-  return fakeWords
+  return fakeWords.join(" ")
 }
 
 export default generateFakeWordsByFrequency
-
-const generateRandomNumber = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
