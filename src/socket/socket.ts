@@ -161,7 +161,7 @@ export class ServerSocket {
         })
 
         //some cheater may send incorrect user_wpm, have to take care of that...
-        socket.on('user_finish', (user_wpm: number, game_id: string, callback: ()=>{}) => {
+        socket.on('user_finish', async (user_wpm: number, game_id: string, callback: ()=>{}) => {
             callback();
             console.log("user finished with wpm: ", user_wpm);
             const uid = this.GetUidFromSocketID(socket.id);
@@ -171,9 +171,9 @@ export class ServerSocket {
             const keys = Object.keys(this.games[game_id].gul)
             //have to modify only this.games[game_id]
             if(this.games[game_id].active_players === 0) {
-                this.removeGameUser(uid);
+                const added_game_id = await this.removeGameUser(uid);
                 //should only update the this.games[game_id]
-                this.SendMessage("match_finished", Object.values(this.users), this.games);
+                this.SendMessage("match_finished", Object.values(this.users), {games: this.games, game_id: added_game_id });
             } else {
                 this.removeGameUser(uid);
             }
@@ -208,24 +208,29 @@ export class ServerSocket {
 
             if(this.games[game_id] && this.games[game_id].active_players === 0) { //Highly Optimisable
                 //I copy "gul" separately, since it's assigned by reference by default (not desired when it's deleted afterwards from another object (check code below))
-                const game_to_store = {...this.games[game_id], guid: game_id, gul: {...this.games[game_id].gul}}
-
+                const game_to_store = {...this.games[game_id], gul: {...this.games[game_id].gul}}
+                
+                const game_has_finished = this.games[game_id].has_started
                 //deleting the game object from the list of games...
-                if(this.games[game_id].has_started === true)
+                if(game_has_finished === true)
                     Object.keys(this.games[game_id].gul).forEach(uid=>{
                         delete this.user_to_game[uid]
                         delete this.games[game_id].gul[uid]
                     });
                 delete this.games[game_id]       
 
-                //sort the user list by WPM:
-                game_to_store.gul = this.sortTheDictionary(game_to_store.gul)
-                //convert into a BeAuTiFul FoRm
-                const beautiful_dictionary : MatchState = {}
-                Object.values(game_to_store.gul).forEach((val)=>beautiful_dictionary[val.username]={WPM: val.WPM})
-                game_to_store.gul = beautiful_dictionary
-                //database save match.
-                await Game.create(game_to_store)  
+                //If the game has finished, then add it to the DATABASE 
+                if(game_has_finished === true) {
+                    //sort the user list by WPM:
+                    game_to_store.gul = this.sortTheDictionary(game_to_store.gul)
+                    //convert into a BeAuTiFul FoRm
+                    const beautiful_dictionary : MatchState = {}
+                    Object.values(game_to_store.gul).forEach((val)=>beautiful_dictionary[val.username]={WPM: val.WPM})
+                    game_to_store.gul = beautiful_dictionary
+                    //database save match.
+                    const res = await Game.create(game_to_store)  
+                    return String(res._id)      
+                }
             }
             //can be modified to... hmm... give to users who need it... idk, somehow don't send the whole database to every user...
             this.SendMessage("match_modified", Object.values(this.users), this.games)

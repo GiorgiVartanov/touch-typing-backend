@@ -14,15 +14,9 @@ export interface MatchState {
     [sid:string]: {WPM: number, has_finished?: boolean, username?: string}
 }
 
-export interface GameInterface extends GameState, Document {
-    guid: string,
-}
+export interface GameInterface extends GameState, Document {}
 
 const gameSchema : Schema<GameInterface> = new  Schema<GameInterface>({
-    guid: {
-        type: String,
-        required: true,
-    },    
     gul: {
         type: Schema.Types.Map,
         of: new Schema(

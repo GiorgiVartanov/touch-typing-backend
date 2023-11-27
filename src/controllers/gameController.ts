@@ -6,7 +6,7 @@ import Game from "../models/Game.model";
 export const getGame = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params
 
-    const data = await Game.find({ guid: { $regex: id } })
+    const data = await Game.findById(id)
 
     if (!data) {
         res.status(400)
@@ -18,7 +18,14 @@ export const getGame = asyncHandler(async (req: Request, res: Response) => {
 
 export const getGames = (async (req: Request, res: Response) => {
 
-    const data = await Game.find()
+    const { username } = req.query
+
+    let data 
+
+    if(username)
+        data = await Game.find() //მოძებნე ელემენტი, რომლის map-ში შედის გასაღები: "username", მარა ვერ ვქენი :((
+    else 
+        data = await Game.find()
 
     if (!data) {
         res.status(400)
