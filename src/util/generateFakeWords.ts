@@ -1,5 +1,4 @@
 // generated fake words for a passed props
-// black list is not added yet (will remove/change inappropriate words that will get generated, ideally it should check if inappropriate word is not a substring of a normal word (like english word class), but its not necessary)
 const generateFakeWords = (
   data: {
     letter: string

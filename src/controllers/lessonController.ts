@@ -44,19 +44,18 @@ const georgianLetters = [
   "ჰ",
 ]
 
-// creates lesson for a passed values inside body
+// creates lesson for a passed values
 export const createLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   if (req.user.accountType !== "Admin") {
     res.status(400)
     throw new Error("Unauthorized")
   }
 
-  const { title, description, approximateDuration, level, text } = req.body
+  const { title, description, level, text } = req.body
 
   const lesson = await Lesson.create({
     title: title,
     description: description,
-    approximateDuration: approximateDuration,
     level: level,
     text: text,
   })

@@ -4,7 +4,7 @@ export interface LessonInterface extends Document {
   image?: string
   title: string
   description: string
-  approximateDuration: number
+  approximateDuration?: number
   level: "Beginner" | "Intermediate" | "Expert" | "Advanced"
   text: string
   wordSeparator?: string
@@ -26,6 +26,7 @@ const lessonSchema: Schema<LessonInterface> = new Schema<LessonInterface>({
   approximateDuration: {
     type: Number,
     required: true,
+    default: 0,
   },
   level: {
     type: String,

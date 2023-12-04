@@ -8,6 +8,8 @@ export interface UserInterface extends Document {
   accountType?: "User" | "Admin"
   guild?: mongoose.Types.ObjectId
   friends: mongoose.Types.ObjectId[]
+  followers: mongoose.Types.ObjectId[]
+  follows: mongoose.Types.ObjectId[]
   completedAchievements: mongoose.Types.ObjectId[]
   pvpHistory: mongoose.Types.ObjectId[]
   lessons: {
@@ -55,6 +57,18 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     ref: "Guild",
   },
   friends: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  followers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  follows: [
     {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -144,5 +158,35 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     default: Date.now,
   },
 })
+
+// adds a user to friend list
+userSchema.methods.addFriend = function (userId: mongoose.Types.ObjectId): void {
+  this.friends.push(userId)
+}
+
+// removes a user to friend list
+userSchema.methods.removeFriend = function (userId: mongoose.Types.ObjectId): void {
+  this.friends = this.friends.filter((friendId) => friendId !== userId)
+}
+
+// follow a user
+userSchema.methods.addFollower = function (userId: mongoose.Types.ObjectId): void {
+  this.follows.push(userId)
+}
+
+// unfollow a user
+userSchema.methods.unfollow = function (userId: mongoose.Types.ObjectId): void {
+  this.follows = this.follows.filter((followId) => followId !== userId)
+}
+
+// adds a user as a follower
+userSchema.methods.addFollower = function (userId: mongoose.Types.ObjectId): void {
+  this.followers.push(userId)
+}
+
+// removes a user from a follower list
+userSchema.methods.removeFollower = function (userId: mongoose.Types.ObjectId): void {
+  this.followers = this.follows.filter((followerId) => followerId !== userId)
+}
 
 export default mongoose.model<UserInterface>("User", userSchema)

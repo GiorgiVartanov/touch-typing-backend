@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes"
 import lessonRoutes from "./routes/lessonRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import appSettingsRoutes from "./routes/appSettingsRoutes"
+import friendshipRoutes from "./routes/friendshipRoutes"
 
 dotenv.config()
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/lesson", lessonRoutes)
 app.use("/api/typingsettings", typingSettingsRoutes)
 app.use("/api/appsettings", appSettingsRoutes)
+app.use("/api/friendship", friendshipRoutes)
 
 app.use(errorHandler)
 
