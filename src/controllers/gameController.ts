@@ -22,8 +22,11 @@ export const getGames = (async (req: Request, res: Response) => {
 
     let data 
 
-    if(username)
-        data = await Game.find() //მოძებნე ელემენტი, რომლის map-ში შედის გასაღები: "username", მარა ვერ ვქენი :((
+    if(username) {
+        var query = {};
+        query['gul.' + String(username)] = {$exists: true};
+        data = await Game.find(query)
+    }
     else 
         data = await Game.find()
 

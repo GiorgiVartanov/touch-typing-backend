@@ -7,6 +7,7 @@ import generateRandomNumber from "../util/generateRandomNumber"
 
 import Lesson from "../models/Lesson.model"
 import Letter from "../models/Letter.model"
+import Word   from "../models/Word.model"
 
 const georgianLetters = [
   "ა",
@@ -152,6 +153,20 @@ export const getLesson = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params
 
   const data = await Lesson.findById(id)
+
+  if (!data) {
+    res.status(400)
+    throw new Error("Something went wrong")
+  }
+
+  res.status(200).json(data)
+})
+
+//returns randomly selected words
+export const getWords = asyncHandler(async (req: Request, res: Response) => {
+  const { amount } = req.query
+  
+  const data = await Word.aggregate([{ $sample: { size: Number(amount) } }])
 
   if (!data) {
     res.status(400)

@@ -1,5 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose"
 
+export interface id_list {
+    [id: string] : string
+}
+
 export interface GameState {
     gul: MatchState,
     text: string, 
@@ -8,10 +12,11 @@ export interface GameState {
     date: Date,
     has_started?: boolean,
     active_players: number,
+    spectators: id_list,
 } 
 
 export interface MatchState {
-    [sid:string]: {WPM: number, has_finished?: boolean, username?: string}
+    [sid:string]: {WPM: number, has_finished?: boolean, username?: string, wants_to_see_result?: boolean}
 }
 
 export interface GameInterface extends GameState, Document {}
