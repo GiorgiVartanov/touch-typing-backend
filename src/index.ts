@@ -9,7 +9,7 @@ import authRoutes from "./routes/authRoutes"
 import lessonRoutes from "./routes/lessonRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import appSettingsRoutes from "./routes/appSettingsRoutes"
-import gameRoutes from "./routes/gameRoutes"
+import matchRoutes from "./routes/matchRoutes"
 import { ServerSocket } from "./socket/socket"
 import http from 'http'
 
@@ -40,7 +40,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/lesson", lessonRoutes)
 app.use("/api/typingsettings", typingSettingsRoutes)
 app.use("/api/appsettings", appSettingsRoutes)
-app.use("/api/game", gameRoutes)
+app.use("/api/match", matchRoutes)
 
 app.use(errorHandler)
 
