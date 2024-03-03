@@ -3,8 +3,47 @@ import asyncHandler from "express-async-handler"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
 import { TextInterface } from "../models/Text.model"
+import generateFakeWords from "../util/generateFakeWords"
+import generateRandomNumber from "../util/generateRandomNumber"
 
 import Text from "../models/Text.model"
+import Letter from "../models/Letter.model"
+
+const georgianLetters = [
+  "ა",
+  "ბ",
+  "გ",
+  "დ",
+  "ე",
+  "ვ",
+  "ზ",
+  "თ",
+  "ი",
+  "კ",
+  "ლ",
+  "მ",
+  "ნ",
+  "ო",
+  "პ",
+  "ჟ",
+  "რ",
+  "ს",
+  "ტ",
+  "უ",
+  "ფ",
+  "ქ",
+  "ღ",
+  "ყ",
+  "შ",
+  "ჩ",
+  "ც",
+  "ძ",
+  "წ",
+  "ჭ",
+  "ხ",
+  "ჯ",
+  "ჰ",
+]
 
 // creates text for a passed values
 export const createPracticeText = asyncHandler(async (req: ProtectedRequest, res: Response) => {
@@ -132,4 +171,36 @@ export const getPracticeTextById = asyncHandler(async (req: Request, res: Respon
   }
 
   res.status(200).json(data)
+})
+
+// returns fake words
+export const getFakeWords = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    letter,
+    amount,
+    minAmountOfSyllables,
+    maxAmountOfSyllables,
+    minLengthOfWord,
+    maxLengthOfWord,
+  } = req.query
+
+  const desiredLetter = letter || georgianLetters[generateRandomNumber(0, georgianLetters.length)]
+
+  const letterItem = await Letter.findOne({ letter: desiredLetter })
+
+  try {
+    const fakeWords = generateFakeWords(
+      letterItem,
+      Number(amount) || undefined,
+      Number(minAmountOfSyllables) || undefined,
+      Number(maxAmountOfSyllables) || undefined,
+      Number(minLengthOfWord) || undefined,
+      Number(maxLengthOfWord) || undefined
+    )
+
+    res.status(200).json({ data: fakeWords })
+  } catch (error) {
+    res.status(400)
+    throw new Error(error)
+  }
 })
