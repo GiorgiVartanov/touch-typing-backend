@@ -4,26 +4,14 @@ export interface UserInterface extends Document {
   username: string
   password: string
   rating?: number
-  biography?: string
   accountType?: "User" | "Admin"
-  guild?: mongoose.Types.ObjectId
   friends: mongoose.Types.ObjectId[]
-  followers: mongoose.Types.ObjectId[]
-  follows: mongoose.Types.ObjectId[]
-  completedAchievements: mongoose.Types.ObjectId[]
+  sentFriendRequests: mongoose.Types.ObjectId[]
   pvpHistory: mongoose.Types.ObjectId[]
-  lessons: {
-    stats: { beginner: number; intermediate: number; expert: number; advanced: number }
-    history: mongoose.Types.ObjectId[]
-    completed: mongoose.Types.ObjectId[]
-  }
+  history: mongoose.Types.ObjectId[]
   typingSettings: {
-    selectedFont: "sans" | "serif"
-    amountOfShownLines: string
-    alignText: "left" | "center" | "right"
-    fontSize: string
-    lineSpacing: string
-    letterSpacing: string
+    selectedFont: "sans" | "serif" | "cursive" | "sanet"
+    fontSize: "auto" | "small" | "medium" | "large" | "extra large"
   }
   appSettings: {
     language: "Eng" | "Geo"
@@ -44,40 +32,23 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   rating: {
     type: Number,
   },
-  biography: {
-    type: String,
-  },
   accountType: {
     type: String,
     required: true,
     enum: ["User", "Admin"],
   },
-  guild: {
-    type: Schema.Types.ObjectId,
-    ref: "Guild",
-  },
   friends: [
     {
       type: Schema.Types.ObjectId,
       ref: "User",
+      default: [],
     },
   ],
-  followers: [
+  sentFriendRequests: [
     {
       type: Schema.Types.ObjectId,
       ref: "User",
-    },
-  ],
-  follows: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  completedAchievements: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Achievement",
+      default: [],
     },
   ],
   pvpHistory: [
@@ -86,59 +57,22 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       ref: "PvPMatch",
     },
   ],
-  lessons: {
-    stats: {
-      beginner: {
-        type: Number,
-      },
-      intermediate: {
-        type: Number,
-      },
-      expert: {
-        type: Number,
-      },
-      advanced: {
-        type: Number,
-      },
+  history: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Lesson",
     },
-    history: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Lesson",
-      },
-    ],
-  },
+  ],
   typingSettings: {
     font: {
       type: String,
-      enum: ["sans", "serif"],
+      enum: ["sans", "serif", "cursive", "sanet"],
       default: "sans",
-    },
-    amountOfShownLines: {
-      type: String,
-      default: "5",
-      enum: ["3", "4", "5", "6", "7"],
-    },
-    alignText: {
-      type: String,
-      enum: ["left", "center", "right"],
-      default: "left",
     },
     fontSize: {
       type: String,
-      default: "Auto",
-      enum: ["Auto", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36"],
-      // auto will be 1.25rem, others will be in pixels
-    },
-    lineHeight: {
-      type: String,
-      default: "Auto",
-      enum: ["Auto", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36"],
-    },
-    letterSpacing: {
-      type: String,
-      default: "0",
-      enum: ["0", "1", "2", "3", "4", "5", "6"],
+      default: "medium",
+      enum: ["small", "medium", "large", "extra large"],
     },
   },
   appSettings: {
@@ -158,35 +92,5 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     default: Date.now,
   },
 })
-
-// adds a user to friend list
-userSchema.methods.addFriend = function (userId: mongoose.Types.ObjectId): void {
-  this.friends.push(userId)
-}
-
-// removes a user to friend list
-userSchema.methods.removeFriend = function (userId: mongoose.Types.ObjectId): void {
-  this.friends = this.friends.filter((friendId) => friendId !== userId)
-}
-
-// follow a user
-userSchema.methods.addFollower = function (userId: mongoose.Types.ObjectId): void {
-  this.follows.push(userId)
-}
-
-// unfollow a user
-userSchema.methods.unfollow = function (userId: mongoose.Types.ObjectId): void {
-  this.follows = this.follows.filter((followId) => followId !== userId)
-}
-
-// adds a user as a follower
-userSchema.methods.addFollower = function (userId: mongoose.Types.ObjectId): void {
-  this.followers.push(userId)
-}
-
-// removes a user from a follower list
-userSchema.methods.removeFollower = function (userId: mongoose.Types.ObjectId): void {
-  this.followers = this.follows.filter((followerId) => followerId !== userId)
-}
 
 export default mongoose.model<UserInterface>("User", userSchema)

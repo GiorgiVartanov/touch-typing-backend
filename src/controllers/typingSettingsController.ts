@@ -4,14 +4,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
-const availableTypingSettings = [
-  "font",
-  "amountOfShownLines",
-  "alignText",
-  "fontSize",
-  "lineHeight",
-  "letterSpacing",
-]
+const availableTypingSettings = ["font", "fontSize"]
 
 export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const { typingSettingToChange, value } = req.body
@@ -29,12 +22,29 @@ export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res:
 
   user.typingSettings = updatedTypingSettings
 
-  const savedUser = await user.save()
+  try {
+    const savedUser = await user.save()
 
-  if (savedUser) {
-    res.status(200).json({ success: true })
-  } else {
-    res.status(400)
-    throw new Error("Something went wrong, could not save data")
+    if (!savedUser) {
+      res.status(400).json({ message: "Could not save data" })
+      return
+    }
+
+    res.status(200).json({ message: "setting were successfully updated" })
+  } catch (error) {
+    res.status(500).json({ message: "unexpected error" })
   }
+})
+
+export const getTypingSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user
+
+  const typingSettings = req.user.typingSettings
+
+  if (!typingSettings) {
+    res.status(400)
+    throw new Error("Something went wrong")
+  }
+
+  res.status(200).json(typingSettings)
 })

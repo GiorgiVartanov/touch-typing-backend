@@ -5,11 +5,13 @@ import cors from "cors"
 import errorHandler from "./middleware/errorMiddleware"
 import connectDB from "./config/db"
 
-import authRoutes from "./routes/authRoutes"
-import lessonRoutes from "./routes/lessonRoutes"
-import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import appSettingsRoutes from "./routes/appSettingsRoutes"
-import friendshipRoutes from "./routes/friendshipRoutes"
+import authRoutes from "./routes/authRoutes"
+import friendsRoutes from "./routes/friendsRoutes"
+import practiceRoutes from "./routes/practiceRoutes"
+import notificationRoutes from "./routes/notificationRoutes"
+import typingSettingsRoutes from "./routes/typingSettingRoutes"
+import userRoutes from "./routes/userRoutes"
 
 dotenv.config()
 
@@ -28,11 +30,13 @@ app.use(
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use("/api/auth", authRoutes)
-app.use("/api/lesson", lessonRoutes)
-app.use("/api/typingsettings", typingSettingsRoutes)
-app.use("/api/appsettings", appSettingsRoutes)
-app.use("/api/friendship", friendshipRoutes)
+app.use("/appsettings", appSettingsRoutes)
+app.use("/auth", authRoutes)
+app.use("/friends", friendsRoutes)
+app.use("/practice", practiceRoutes)
+app.use("/notification", notificationRoutes)
+app.use("/typingsettings", typingSettingsRoutes)
+app.use("/user", userRoutes)
 
 app.use(errorHandler)
 

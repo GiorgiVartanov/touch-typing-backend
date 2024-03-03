@@ -4,24 +4,64 @@ import bcrypt from "bcryptjs"
 import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
+import { sendFriendRequest } from "./notificationController"
 
 // register user
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const { username, password } = req.body
+  const { username, password, confirmPassword } = req.body
 
-  console.log({ username, password })
+  const usernameError = []
+  const passwordError = []
+  const confirmPasswordError = []
 
-  if (!username || !password) {
-    res.status(400)
-    throw new Error("Please add all fields")
+  if (!username) {
+    usernameError.push("Please add username")
+  }
+
+  if (!password) {
+    passwordError.push("Please add password")
+  }
+
+  if (!confirmPassword) {
+    confirmPasswordError.push("Please confirm password")
+  }
+
+  if (username.length < 6) {
+    usernameError.push("Username is too short")
+  }
+
+  if (username.length > 24) {
+    usernameError.push("Username is too long")
+  }
+
+  if (password.length < 6) {
+    passwordError.push("Password is too short")
+  }
+
+  if (password.length > 40) {
+    passwordError.push("Password is too long")
+  }
+
+  if (password !== confirmPassword) {
+    passwordError.push("passwords do not match")
+    confirmPasswordError.push("passwords do not match")
   }
 
   // check if user exists
   const userExists = await User.findOne({ username })
 
   if (userExists) {
-    res.status(400)
-    throw new Error("User with this username already exists")
+    usernameError.push("user with this username already exists")
+  }
+
+  if (usernameError.length > 0 || passwordError.length > 0 || confirmPasswordError.length > 0) {
+    res.status(400).json({
+      usernameError,
+      passwordError,
+      confirmPasswordError,
+      message: "incorrect credentials",
+    })
+    return
   }
 
   // hash password
@@ -41,18 +81,19 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        friends: user.friends,
-        completedAchievements: user.completedAchievements,
+        friends: [],
+        history: user.history,
         pvpHistory: user.pvpHistory,
-        lessons: user.lessons,
+        sentFriendRequests: user.sentFriendRequests,
       },
       appSettings: user.appSettings,
       typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
+    return
   } else {
-    res.status(400)
-    throw new Error("Invalid user data")
+    res.status(400).json({ message: "invalid user data" })
+    return
   }
 })
 
@@ -60,31 +101,57 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { username, password } = req.body
 
-  if (!username || !password) {
-    res.status(400)
-    throw new Error("Please add all fields")
+  const usernameError = []
+  const passwordError = []
+
+  if (!username) {
+    usernameError.push("Please, add username")
+  }
+
+  if (!password) {
+    passwordError.push("Please, add password")
+  }
+
+  if (usernameError.length > 0 || passwordError.length > 0) {
+    res.status(400).json({ usernameError, passwordError })
+    return
   }
 
   const user = await User.findOne({ username: username })
 
+  if (!user) {
+    res
+      .status(400)
+      .json({ usernameError: ["user with this username does not exist"], passwordError: [] })
+    return
+  }
+
   if (user && (await bcrypt.compare(password, user.password))) {
+    const userFriendsUsernames = await Promise.all(
+      user.friends.map(async (friendId) => {
+        const friend = await User.findById(friendId)
+        return friend.username
+      })
+    )
+
     res.status(201).json({
       user: {
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        friends: user.friends,
-        completedAchievements: user.completedAchievements,
+        friends: userFriendsUsernames,
+        history: user.history,
         pvpHistory: user.pvpHistory,
-        lessons: user.lessons,
+        sentFriendRequests: user.sentFriendRequests,
       },
       appSettings: user.appSettings,
       typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
+    return
   } else {
-    res.status(400)
-    throw new Error("Invalid credentials")
+    res.status(400).json({ usernameError: [], passwordError: ["incorrect password"] })
+    return
   }
 })
 

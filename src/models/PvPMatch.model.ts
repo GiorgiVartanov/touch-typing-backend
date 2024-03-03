@@ -13,7 +13,6 @@ const pvpMatchSchema: Schema<PvPMatchInterface> = new Schema<PvPMatchInterface>(
     ref: "User",
     required: true,
   },
-
   player2: {
     type: Schema.Types.ObjectId,
     ref: "User",
