@@ -1,9 +1,11 @@
 import express, { Express, Router, Request, Response } from "express"
 import dotenv from "dotenv"
 import cors from "cors"
+import http from "http"
 
 import errorHandler from "./middleware/errorMiddleware"
 import connectDB from "./config/db"
+import { ServerSocket } from "./socket/socket"
 
 import appSettingsRoutes from "./routes/appSettingsRoutes"
 import authRoutes from "./routes/authRoutes"
@@ -12,11 +14,18 @@ import practiceRoutes from "./routes/practiceRoutes"
 import notificationRoutes from "./routes/notificationRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import userRoutes from "./routes/userRoutes"
+import matchRoutes from "./routes/matchRoutes"
 
 dotenv.config()
 
 const app: Express = express()
 const PORT = process.env.PORT || 5000
+
+//server handling
+const httpServer = http.createServer(app)
+
+//start the socket
+new ServerSocket(httpServer)
 
 connectDB()
 
@@ -37,9 +46,12 @@ app.use("/practice", practiceRoutes)
 app.use("/notification", notificationRoutes)
 app.use("/typingsettings", typingSettingsRoutes)
 app.use("/user", userRoutes)
+app.use("/api/auth", authRoutes)
+app.use("/api/lesson", lessonRoutes)
+app.use("/api/typingsettings", typingSettingsRoutes)
+app.use("/api/appsettings", appSettingsRoutes)
+app.use("/api/match", matchRoutes)
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`)
-})
+httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`))
