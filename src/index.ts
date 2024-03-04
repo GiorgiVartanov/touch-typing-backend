@@ -15,6 +15,7 @@ import notificationRoutes from "./routes/notificationRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import userRoutes from "./routes/userRoutes"
 import matchRoutes from "./routes/matchRoutes"
+import utilRoutes from "./routes/utilRoutes"
 
 dotenv.config()
 
@@ -47,6 +48,7 @@ app.use("/notification", notificationRoutes)
 app.use("/typingsettings", typingSettingsRoutes)
 app.use("/user", userRoutes)
 app.use("/match", matchRoutes)
+app.use("/util", utilRoutes)
 // app.use("/api/auth", authRoutes)
 // app.use("/api/lesson", lessonRoutes)
 // app.use("/api/typingsettings", typingSettingsRoutes)
