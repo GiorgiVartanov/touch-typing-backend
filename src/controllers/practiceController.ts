@@ -54,14 +54,14 @@ export const createPracticeText = asyncHandler(async (req: ProtectedRequest, res
 
   const { title, description, level, text } = req.body
 
-  const lesson = await Text.create({
+  const practiceText = await Text.create({
     title: title,
     description: description,
     level: level,
     text: text,
   })
 
-  if (!lesson) {
+  if (!practiceText) {
     res.status(400)
     throw new Error("something went wrong")
   }
@@ -107,10 +107,10 @@ export const getPracticeTexts = asyncHandler(async (req: Request, res: Response)
   if (textLengthMin || textLengthMax) {
     searchQuery.textLength = {}
     if (textLengthMin) {
-      searchQuery.textLength.$gte = parseInt(textLengthMin as string, 10)
+      searchQuery.textLength.$gte = parseInt(textLengthMin as string)
     }
     if (textLengthMax) {
-      searchQuery.textLength.$lte = parseInt(textLengthMax as string, 10)
+      searchQuery.textLength.$lte = parseInt(textLengthMax as string)
     }
   }
 

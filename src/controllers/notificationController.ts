@@ -35,10 +35,16 @@ export const sendFriendRequest = asyncHandler(async (req: ProtectedRequest, res:
 
   const receiver = await User.findOne({ username: username })
 
+  if (receiver.friends.includes(sender._id)) {
+    res.status(400)
+    throw new Error("you are already friends")
+  }
+
   const wasAlreadySent = await Notification.findOne({
     notificationType: "friendRequest",
     receiver: receiver._id,
     sender: sender._id,
+    status: "pending",
   })
 
   if (wasAlreadySent) {
