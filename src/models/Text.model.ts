@@ -47,4 +47,4 @@ const textSchema: Schema<TextInterface> = new Schema<TextInterface>({
   },
 })
 
-export default mongoose.model<TextInterface>("Lesson", textSchema)
+export default mongoose.model<TextInterface>("Text", textSchema)

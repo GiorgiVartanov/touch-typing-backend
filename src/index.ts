@@ -48,11 +48,6 @@ app.use("/notification", notificationRoutes)
 app.use("/typingsettings", typingSettingsRoutes)
 app.use("/user", userRoutes)
 app.use("/match", matchRoutes)
-app.use("/util", utilRoutes)
-// app.use("/api/auth", authRoutes)
-// app.use("/api/lesson", lessonRoutes)
-// app.use("/api/typingsettings", typingSettingsRoutes)
-// app.use("/api/appsettings", appSettingsRoutes)
 
 app.use(errorHandler)
 

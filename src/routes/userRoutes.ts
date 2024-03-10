@@ -3,8 +3,9 @@ import protect from "../middleware/authMiddleware"
 
 const router: Router = express.Router()
 
-import { getUser } from "../controllers/userController"
+import { getUser, getUsers } from "../controllers/userController"
 
+router.get("/search", getUsers)
 router.get("/:username", getUser)
 
 export default router

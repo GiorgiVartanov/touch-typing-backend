@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express"
 import asyncHandler from "express-async-handler"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
+import { UserInterface } from "../models/User.model"
+
 import User from "../models/User.model"
 
 export const removeFriend = asyncHandler(async (req: ProtectedRequest, res: Response) => {
@@ -75,4 +77,49 @@ export const getFriends = asyncHandler(async (req: Request, res: Response) => {
   res
     .status(200)
     .json({ data: userFriendsUsernames, message: `successfully fetched ${username}'s friends` })
+})
+
+export const getFriendsSuggestions = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user
+
+  const friends = user.friends
+
+  // user's friends
+  const userFriends = await Promise.all(
+    friends.map(async (friendId) => {
+      const friend = await User.findById(friendId)
+      return friend
+    })
+  )
+
+  // friends of user's friends
+  const friendsFriends = await Promise.all(
+    userFriends.map(async (friendId) => {
+      const friend = await User.findById(friendId)
+      return Promise.all(friend.friends.map((friendsFriendId) => User.findById(friendsFriendId)))
+    })
+  )
+
+  const friendsFriendsFlat = friendsFriends.flat()
+
+  // usernames of user's friends
+  const friendsUsernames = userFriends.map((friend) => friend.username)
+
+  // // usernames of user's friends friend
+  const friendsFriendsUsernames = [...new Set(friendsFriendsFlat.map((friend) => friend.username))]
+
+  // usernames of user's friends' friends without user's friends
+  const filteredFriendsFriendsUsernames = friendsFriendsUsernames.filter(
+    (friend) => !friendsUsernames.includes(friend)
+  )
+
+  // usernames of user's friends's friends without current user
+  const friendsFriendsUsernamesWithoutCurrentUser = filteredFriendsFriendsUsernames.filter(
+    (friend) => friend !== user.username
+  )
+
+  res.status(200).json({
+    data: friendsFriendsUsernamesWithoutCurrentUser,
+    message: "friend suggestions successfully fetched",
+  })
 })
