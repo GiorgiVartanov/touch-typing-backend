@@ -15,6 +15,7 @@ import notificationRoutes from "./routes/notificationRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import userRoutes from "./routes/userRoutes"
 import matchRoutes from "./routes/matchRoutes"
+import utilRoutes from "./routes/utilRoutes"
 
 dotenv.config()
 
