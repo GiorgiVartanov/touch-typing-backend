@@ -5,7 +5,7 @@ import generateFakeWords from "../util/generateFakeWords"
 import generateRandomNumber from "../util/generateRandomNumber"
 
 import Letter from "../models/Letter.model"
-import Word   from "../models/Word.model"
+import Word from "../models/Word.model"
 
 const georgianLetters = [
   "ა",
@@ -78,7 +78,7 @@ export const getFakeWords = asyncHandler(async (req: Request, res: Response) => 
 //returns randomly selected words
 export const getWords = asyncHandler(async (req: Request, res: Response) => {
   const { amount } = req.query
-  
+
   const data = await Word.aggregate([{ $sample: { size: Number(amount) } }])
 
   if (!data) {
