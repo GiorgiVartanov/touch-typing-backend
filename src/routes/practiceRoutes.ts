@@ -8,13 +8,13 @@ import {
   getPracticeTexts,
   getPracticeTextById,
   getFakeWords,
-  // getWords,
+  getWords,
 } from "../controllers/practiceController"
 
 router.post("/create", protect, createPracticeText)
 router.get("/texts", getPracticeTexts)
-router.get("/:id", getPracticeTextById)
 router.get("/fakewords", getFakeWords)
-// router.get("/words", getWords)
+router.get("/words", getWords)
+router.get("/:id", getPracticeTextById)
 
 export default router
