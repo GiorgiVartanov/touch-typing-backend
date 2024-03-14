@@ -10,11 +10,11 @@ export interface UserInterface extends Document {
   pvpHistory: mongoose.Types.ObjectId[]
   history: mongoose.Types.ObjectId[]
   typingSettings: {
-    selectedFont: "sans" | "serif" | "cursive" | "sanet"
+    selectedFont: "sans" | "serif" | "sanet"
     fontSize: "auto" | "small" | "medium" | "large" | "extra large"
   }
   appSettings: {
-    language: "Eng" | "Geo"
+    language: "System Default" | "En" | "Geo"
     theme: "System Default" | "Dark" | "Light"
   }
   timestamp: Date
@@ -78,8 +78,8 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   appSettings: {
     language: {
       type: String,
-      enum: ["Eng", "Geo"],
-      default: "Geo",
+      enum: ["System Default", "En", "Geo"],
+      default: "System Default",
     },
     theme: {
       type: String,
