@@ -84,24 +84,34 @@ export class ServerSocket {
         const uid = v4()
         this.users[uid] = socket.id
 
+        //for valid users, assign them their usernames...
         if (token) {
-          //for valid users, assign them their usernames...
-          // verify  token
-          const decoded: any = jwt.verify(token, process.env.JWT_SECRET)
+          try {
+            // verify  token
+            const decoded: any = jwt.verify(token, process.env.JWT_SECRET)
 
-          // get user from the token
-          const user = await User.findById(decoded.id).select("-password")
+            // get user from the token
+            const user = await User.findById(decoded.id).select("-password")
 
-          if (user && user.username === username) {
-            // არ ვიცი, გიომ ეს მითხრა ქენიო თუ სხვა რამე თქვა...
-            if (Object.values(this.usernames).includes(username)) {
-              console.log("disconnecting user: ", username)
-              this.SendMessage("already_connected", [socket.id])
-              socket.disconnect()
-              delete this.users[uid]
-              return
+            if (user && user.username === username) {
+              // არ ვიცი, გიომ ეს მითხრა ქენიო თუ სხვა რამე თქვა...
+              if (Object.values(this.usernames).includes(username)) {
+                console.log("disconnecting user: ", username)
+                this.SendMessage("already_connected", [socket.id])
+                socket.disconnect()
+                delete this.users[uid]
+                return
+              }
+              this.usernames[uid] = username
             }
-            this.usernames[uid] = username
+          } catch (err) {
+            if (err.name === 'TokenExpiredError') {
+              // Handle token expired error
+              console.error('Token has expired');
+            } else {
+                // Handle other errors
+                console.error('JWT verification failed:', err.message);
+            }
           }
         }
 
