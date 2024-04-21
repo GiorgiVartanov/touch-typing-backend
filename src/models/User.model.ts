@@ -9,9 +9,16 @@ export interface UserInterface extends Document {
   sentFriendRequests: mongoose.Types.ObjectId[]
   pvpHistory: mongoose.Types.ObjectId[]
   history: mongoose.Types.ObjectId[]
+  createdLayouts: mongoose.Types.ObjectId[]
+  selectedLayout: {
+    Eng: mongoose.Types.ObjectId,
+    Geo: mongoose.Types.ObjectId,
+  }
   typingSettings: {
     selectedFont: "sans" | "serif" | "cursive" | "sanet"
     fontSize: "auto" | "small" | "medium" | "large" | "extra large"
+    keyboardType: "ANSI" | "ANSI-ISO" | "ISO"
+    keyboardLanguage: "Eng" | "Geo"
   }
   appSettings: {
     language: "Eng" | "Geo"
@@ -63,6 +70,24 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       ref: "Lesson",
     },
   ],
+  selectedLayout: {
+    Eng: {
+      type: Schema.Types.ObjectId,
+      ref: "Layout",
+      default: "661a4f84ba6289bbe8874fbf"
+    },
+    Geo: {
+      type: Schema.Types.ObjectId,
+      ref: "Layout",
+      default: "661a4f9bba6289bbe8874fc1"
+    }
+  },
+  createdLayouts: [
+    {
+    type: Schema.Types.ObjectId,
+    ref: "Layout",
+  }
+],
   typingSettings: {
     font: {
       type: String,
@@ -74,6 +99,16 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       default: "medium",
       enum: ["small", "medium", "large", "extra large"],
     },
+    keyboardLanguage: {
+      type: String,
+      default: "Eng",
+      enum: ["Eng", "Geo"]
+    },
+    keyboardLayout: {
+      type: String,
+      default: "ANSI",
+      enum: ["ANSI" , "ANSI-ISO" , "ISO"]
+    }
   },
   appSettings: {
     language: {

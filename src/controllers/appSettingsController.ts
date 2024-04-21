@@ -12,7 +12,7 @@ export const setAppSettings = asyncHandler(async (req: ProtectedRequest, res: Re
 
   if (!availableAppSettings.includes(appSettingToChange)) {
     res.status(400)
-    throw new Error("unrecognized app setting")
+    throw new Error(`unrecognized typing setting ${appSettingToChange}`)
   }
 
   const updatedAppSettings = {
@@ -30,4 +30,17 @@ export const setAppSettings = asyncHandler(async (req: ProtectedRequest, res: Re
     res.status(400)
     throw new Error("Something went wrong, could not save data")
   }
+})
+
+export const getAppSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user
+
+  const appSettings = user.appSettings
+
+  if (!appSettings) {
+    res.status(400)
+    throw new Error("Something went wrong")
+  }
+
+  res.status(200).json(appSettings)
 })

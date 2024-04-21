@@ -18,7 +18,7 @@ const protect = expressAsyncHandler(
         // get token from header
         token = req.headers.authorization.split(" ")[1]
 
-        // verify  token
+        // verify token
         const decoded: any = jwt.verify(token, process.env.JWT_SECRET)
 
         // get user from the token

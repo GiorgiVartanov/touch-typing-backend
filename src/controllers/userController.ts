@@ -19,6 +19,8 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
 
   const userToSend = {
     username: user.username,
+    selectedLayout: user.selectedLayout,
+    createdLayouts: user.createdLayouts,
     friends: userFriends,
     accountType: user.accountType,
   }

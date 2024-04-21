@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
-const availableTypingSettings = ["font", "fontSize"]
+const availableTypingSettings = ["font", "fontSize", "keyboardLanguage", "keyboardType"]
 
 export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const { typingSettingToChange, value } = req.body
@@ -12,7 +12,7 @@ export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res:
 
   if (!availableTypingSettings.includes(typingSettingToChange)) {
     res.status(400)
-    throw new Error("unrecognized typing setting")
+    throw new Error(`unrecognized typing setting ${typingSettingToChange}`)
   }
 
   const updatedTypingSettings = {
@@ -36,10 +36,31 @@ export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res:
   }
 })
 
+export const setLayout = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user
+  const { layout } = req.body
+
+
+  user.selectedLayout = layout
+
+  try {
+    const savedUser = await user.save()
+
+    if (!savedUser) {
+      res.status(400).json({ message: "Could not save data" })
+      return
+    }
+
+    res.status(200).json({ message: "layout updated" })
+  } catch (error) {
+    res.status(500).json({ message: "unexpected error" })
+  }
+})
+
 export const getTypingSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const user = req.user
 
-  const typingSettings = req.user.typingSettings
+  const typingSettings = user.typingSettings
 
   if (!typingSettings) {
     res.status(400)

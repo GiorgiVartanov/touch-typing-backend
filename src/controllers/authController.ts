@@ -2,9 +2,12 @@ import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import asyncHandler from "express-async-handler"
-import User from "../models/User.model"
+
 import { ProtectedRequest } from "../middleware/authMiddleware"
 import { sendFriendRequest } from "./notificationController"
+
+import Layout from "../models/Layout.model"
+import User from "../models/User.model"
 
 // register user
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
@@ -75,6 +78,13 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     accountType: "User",
   })
 
+  console.log(user)
+
+  const geoLayout = await Layout.findById(user.selectedLayout.Geo)
+  const enLayout = await Layout.findById(user.selectedLayout.Eng)
+
+  const layout = { Geo:geoLayout, Eng:enLayout }
+
   if (user) {
     res.status(201).json({
       user: {
@@ -85,9 +95,10 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         history: user.history,
         pvpHistory: user.pvpHistory,
         sentFriendRequests: user.sentFriendRequests,
+        selectedLayout:layout,
+        appSettings: user.appSettings,
+        typingSettings: user.typingSettings,
       },
-      appSettings: user.appSettings,
-      typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
     return
@@ -134,6 +145,12 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       })
     )
 
+    
+    const geoLayout = await Layout.findById(user.selectedLayout.Geo)
+    const enLayout = await Layout.findById(user.selectedLayout.Eng)
+
+    const layout = { Geo:geoLayout, Eng:enLayout }
+
     res.status(201).json({
       user: {
         _id: user.id,
@@ -143,9 +160,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         history: user.history,
         pvpHistory: user.pvpHistory,
         sentFriendRequests: user.sentFriendRequests,
+        selectedLayout: layout,
+        appSettings: user.appSettings,
+        typingSettings: user.typingSettings,
       },
-      appSettings: user.appSettings,
-      typingSettings: user.typingSettings,
       token: generateToken(user._id),
     })
     return

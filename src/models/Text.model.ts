@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from "mongoose"
 
 export interface TextInterface extends Document {
   title: string
+  language: "Eng" | "Geo"
   description: string
   author?: string
   level: "Easy" | "Intermediate" | "Normal" | "Hard" | "Expert" | "Advanced"
@@ -9,12 +10,18 @@ export interface TextInterface extends Document {
   wordSeparator?: string
   publishedOn: Date
   timestamp: Date
+
 }
 
 const textSchema: Schema<TextInterface> = new Schema<TextInterface>({
   title: {
     type: String,
     required: true,
+  },
+  language: {
+    type: String,
+    required: false,
+    default: "Eng"
   },
   description: {
     type: String,
