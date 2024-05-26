@@ -110,26 +110,30 @@ export const addLayout = asyncHandler(async(req: ProtectedRequest, res:Response)
   const { layout: {keyboard, language, title} } = req.body
   const user = req.user
 
-  if(keyboard.length !== 61) {
+  console.log(keyboard[0])
+
+   if(keyboard.length !== 61) {
     res.status(400)
     throw new Error("something went wrong")
   }
 
-  const newLayout = await Layout.create({
-    keyboard: keyboard,
-    language: language,
-    title: title,
-    public: false, // make it changeable 
-    official: false,
-    creator: user._id,
-  })
+  try {
+    const newLayout = await Layout.create({
+      keyboard: keyboard,
+      language: language,
+      title: title,
+      public: false, // make it changeable 
+      official: false,
+      creator: user._id,
+    })
+  
+    user.createdLayouts = [...user.createdLayouts, newLayout._id]
 
-  if (!newLayout) {
+    await user.save()
+
+    res.status(200).json({ message: `${title} layout was successfully posted` })
+  } catch (error) {
     res.status(400)
-    throw new Error("something went wrong")
+    throw new Error(`something went wrong: ${error}`)
   }
-
-  user.createdLayouts = [...user.createdLayouts, newLayout._id]
-
-  res.status(200).json({ message: `${title} layout was successfully posted` })
 })

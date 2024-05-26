@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import asyncHandler from "express-async-handler"
 
 import User from "../models/User.model"
+import Layout from "../models/Layout.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
 // gets user's data
@@ -17,10 +18,13 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
     })
   )
 
+  const createdLayouts = await Layout.find({ _id: { $in: user.createdLayouts } });
+
+
   const userToSend = {
     username: user.username,
     selectedLayout: user.selectedLayout,
-    createdLayouts: user.createdLayouts,
+    createdLayouts: createdLayouts,
     friends: userFriends,
     accountType: user.accountType,
   }

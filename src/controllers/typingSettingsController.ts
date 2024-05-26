@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
 
-const availableTypingSettings = ["font", "fontSize", "keyboardLanguage", "keyboardType"]
+const availableTypingSettings = ["font", "fontSize", "keyboardLanguage", "keyboardType", "keyboardSize", "showColoredKeys", "showKeyboardWhileTyping"]
 
 export const setTypingSettings = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const { typingSettingToChange, value } = req.body

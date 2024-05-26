@@ -16,12 +16,15 @@ export interface UserInterface extends Document {
   }
   typingSettings: {
     selectedFont: "sans" | "serif" | "cursive" | "sanet"
-    fontSize: "auto" | "small" | "medium" | "large" | "extra large"
+    fontSize: "small" | "medium" | "large" | "extra large"
+    keyboardSize: "small" | "medium" | "large"
     keyboardType: "ANSI" | "ANSI-ISO" | "ISO"
     keyboardLanguage: "Eng" | "Geo"
+    showColoredKeys: boolean
+    showKeyboardWhileTyping: boolean
   }
   appSettings: {
-    language: "Eng" | "Geo"
+    language: "System Default" | "Eng" | "Geo"
     theme: "System Default" | "Dark" | "Light"
   }
   timestamp: Date
@@ -104,10 +107,23 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       default: "Eng",
       enum: ["Eng", "Geo"]
     },
-    keyboardLayout: {
+    keyboardType: {
       type: String,
       default: "ANSI",
       enum: ["ANSI" , "ANSI-ISO" , "ISO"]
+    },
+    keyboardSize: {
+      type: String,
+      default: "medium",
+      enum: ["small" , "medium" , "large"]
+    },
+    showColoredKeys: {
+      type: Boolean,
+      default: true,
+    },
+    showKeyboardWhileTyping: {
+      type: Boolean,
+      default: true,
     }
   },
   appSettings: {
