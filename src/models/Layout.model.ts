@@ -13,7 +13,7 @@ export interface LayoutInterface extends Document {
   title: string
   public: boolean
   official: boolean
-  creator: mongoose.Types.ObjectId | null
+  creator: mongoose.Types.ObjectId | string | null
 }
 
 const LayoutSchema: Schema<LayoutInterface> = new Schema<LayoutInterface>({
@@ -46,7 +46,7 @@ const LayoutSchema: Schema<LayoutInterface> = new Schema<LayoutInterface>({
     default: false,
   },
   creator: {
-    type: Schema.Types.ObjectId || null,
+    type: Schema.Types.ObjectId || String || null,
     ref: "User",
     default: null
   }

@@ -11,21 +11,12 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findOne({ username: username })
 
-  const userFriends = await Promise.all(
-    user.friends.map(async (friendId) => {
-      const friend = await User.findById(friendId)
-      return friend.username
-    })
-  )
-
   const createdLayouts = await Layout.find({ _id: { $in: user.createdLayouts } });
-
 
   const userToSend = {
     username: user.username,
     selectedLayout: user.selectedLayout,
     createdLayouts: createdLayouts,
-    friends: userFriends,
     accountType: user.accountType,
   }
 

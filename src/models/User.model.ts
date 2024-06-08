@@ -5,17 +5,14 @@ export interface UserInterface extends Document {
   password: string
   rating?: number
   accountType?: "User" | "Admin"
-  friends: mongoose.Types.ObjectId[]
-  sentFriendRequests: mongoose.Types.ObjectId[]
   pvpHistory: mongoose.Types.ObjectId[]
-  history: mongoose.Types.ObjectId[]
   createdLayouts: mongoose.Types.ObjectId[]
   selectedLayout: {
     Eng: mongoose.Types.ObjectId,
     Geo: mongoose.Types.ObjectId,
   }
   typingSettings: {
-    selectedFont: "sans" | "serif" | "cursive" | "sanet"
+    selectedFont: "sans" | "serif" | "sanet"
     fontSize: "small" | "medium" | "large" | "extra large"
     keyboardSize: "small" | "medium" | "large"
     keyboardType: "ANSI" | "ANSI-ISO" | "ISO"
@@ -47,30 +44,10 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     required: true,
     enum: ["User", "Admin"],
   },
-  friends: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: [],
-    },
-  ],
-  sentFriendRequests: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: [],
-    },
-  ],
   pvpHistory: [
     {
       type: Schema.Types.ObjectId,
       ref: "PvPMatch",
-    },
-  ],
-  history: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Lesson",
     },
   ],
   selectedLayout: {
@@ -94,7 +71,7 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   typingSettings: {
     font: {
       type: String,
-      enum: ["sans", "serif", "cursive", "sanet"],
+      enum: ["sans", "serif", "sanet"],
       default: "sans",
     },
     fontSize: {
@@ -104,7 +81,7 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     },
     keyboardLanguage: {
       type: String,
-      default: "Eng",
+      default: "Geo",
       enum: ["Eng", "Geo"]
     },
     keyboardType: {
@@ -129,8 +106,8 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   appSettings: {
     language: {
       type: String,
-      enum: ["Eng", "Geo"],
-      default: "Geo",
+      enum: ["System Default", "Eng", "Geo"],
+      default: "System Default",
     },
     theme: {
       type: String,

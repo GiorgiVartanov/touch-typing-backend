@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs"
 import asyncHandler from "express-async-handler"
 
 import { ProtectedRequest } from "../middleware/authMiddleware"
-import { sendFriendRequest } from "./notificationController"
 
 import Layout from "../models/Layout.model"
 import User from "../models/User.model"
@@ -91,10 +90,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        friends: [],
-        history: user.history,
         pvpHistory: user.pvpHistory,
-        sentFriendRequests: user.sentFriendRequests,
         selectedLayout:layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,
@@ -138,14 +134,6 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   if (user && (await bcrypt.compare(password, user.password))) {
-    const userFriendsUsernames = await Promise.all(
-      user.friends.map(async (friendId) => {
-        const friend = await User.findById(friendId)
-        return friend.username
-      })
-    )
-
-    
     const geoLayout = await Layout.findById(user.selectedLayout.Geo)
     const enLayout = await Layout.findById(user.selectedLayout.Eng)
 
@@ -156,10 +144,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         _id: user.id,
         username: user.username,
         accountType: user.accountType,
-        friends: userFriendsUsernames,
-        history: user.history,
         pvpHistory: user.pvpHistory,
-        sentFriendRequests: user.sentFriendRequests,
         selectedLayout: layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,

@@ -55,6 +55,11 @@ export const createPracticeText = asyncHandler(async (req: ProtectedRequest, res
 
   const { title, description, level, text } = req.body
 
+  if (!title || !description || !level || !text) {
+    res.status(400)
+    throw new Error("not all values were provided")
+  }
+
   const practiceText = await Text.create({
     title: title,
     description: description,

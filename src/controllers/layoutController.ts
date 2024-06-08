@@ -12,7 +12,20 @@ export const getLayout = asyncHandler(async (req: Request, res: Response) => {
 
   try {
     const data = await Layout.findById(id)
-    res.status(200).json(data)
+
+    const user = await User.findById(data?.creator)
+
+    const dataToSend = {
+      _id: data._id,
+      keyboard: data.keyboard,
+      language: data.language,
+      title: data.title,
+      public: data.public,
+      official: data.official,
+      creator: user?.username || null
+    }
+    
+    res.status(200).json(dataToSend)
   } catch (error) {
     res.status(400)
     throw new Error(error)
@@ -53,7 +66,6 @@ export const getLayouts = asyncHandler(async(req: Request, res: Response) => {
   if (language && language !== "All") {
     searchQuery.language = language as string
   }
-
 
   const totalAmount: number = await Layout.countDocuments(searchQuery)
   const totalPages: number = Math.ceil(totalAmount / pageSize)

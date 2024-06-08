@@ -9,9 +9,7 @@ import { ServerSocket } from "./socket/socket"
 
 import appSettingsRoutes from "./routes/appSettingsRoutes"
 import authRoutes from "./routes/authRoutes"
-import friendsRoutes from "./routes/friendsRoutes"
 import practiceRoutes from "./routes/practiceRoutes"
-import notificationRoutes from "./routes/notificationRoutes"
 import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import userRoutes from "./routes/userRoutes"
 import matchRoutes from "./routes/matchRoutes"
@@ -42,9 +40,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use("/appsettings", appSettingsRoutes)
 app.use("/auth", authRoutes)
-app.use("/friends", friendsRoutes)
 app.use("/practice", practiceRoutes)
-app.use("/notification", notificationRoutes)
 app.use("/typingsettings", typingSettingsRoutes)
 app.use("/user", userRoutes)
 app.use("/match", matchRoutes)
