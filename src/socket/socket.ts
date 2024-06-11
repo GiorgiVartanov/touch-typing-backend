@@ -5,6 +5,8 @@ import {
   FakeWordsProps,
   MatchState,
   PlayerState,
+  RequestProps,
+  SentencesProps,
   Timers,
   WordsProps,
   id_list,
@@ -15,6 +17,7 @@ import User from "../models/User.model"
 import generateFakeWords from "../util/generateFakeWords"
 import Letter from "../models/Letter.model"
 import Word from "../models/Word.model"
+import Sentence from "../models/Sentence.model"
 
 //Too MANY details... :OOOOOO
 export class ServerSocket {
@@ -155,7 +158,7 @@ export class ServerSocket {
     socket.on(
       "create_match",
       async (
-        req: FakeWordsProps | WordsProps,
+        req: RequestProps,
         time_limit: number,
         user_limit: number,
         callback: (match_id: string, matches: { [match_id: string]: MatchState }) => void
@@ -425,7 +428,8 @@ export class ServerSocket {
   }
 }
 
-const generateText = async (req: FakeWordsProps | WordsProps): Promise<string> => {
+//Duplicate code, same functions are defined in Practice Controller.
+const generateText = async (req: RequestProps): Promise<string> => {
   if (req.type == "FakeWords") {
     const letterItem = await Letter.findOne({ letter: req.letter })
     console.log(req)
@@ -442,5 +446,11 @@ const generateText = async (req: FakeWordsProps | WordsProps): Promise<string> =
     const data = await Word.aggregate([{ $sample: { size: req.amount } }])
     return data.map((el: { _id: string; word: string; count: number }) => el.word).join(" ")
   }
-  return ""
+  else if(req.type == "Sentences") {
+    const data = await Sentence.aggregate([{ $sample: { size: req.amount } }])
+    return data.map((el: { _id: string; sentence: string; }) => el.sentence).join(". ")
+  } else {
+    console.log("request type not implemented")
+    return ""
+  }
 }

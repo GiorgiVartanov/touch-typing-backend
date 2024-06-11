@@ -23,6 +23,13 @@ export interface WordsProps {
   amount: number
 }
 
+export interface SentencesProps {
+  type: "Sentences"
+  amount: number
+}
+
+export type RequestProps = FakeWordsProps | WordsProps | SentencesProps;
+
 export interface MatchState {
   players: PlayerState
   text: string
@@ -32,7 +39,7 @@ export interface MatchState {
   has_started?: boolean
   active_players: number
   spectators: id_list
-  request?: FakeWordsProps | WordsProps
+  request?: RequestProps
 }
 
 export interface PlayerState {
