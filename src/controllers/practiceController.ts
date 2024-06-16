@@ -9,6 +9,7 @@ import generateRandomNumber from "../util/generateRandomNumber"
 import Text from "../models/Text.model"
 import Letter from "../models/Letter.model"
 import Word from "../models/Word.model"
+import Sentence from "../models/Sentence.model"
 
 const georgianLetters = [
   "ა",
@@ -216,6 +217,19 @@ export const getWords = asyncHandler(async (req: Request, res: Response) => {
   const { amount } = req.query
 
   const data = await Word.aggregate([{ $sample: { size: Number(amount) } }])
+
+  if (!data) {
+    res.status(400)
+    throw new Error("Something went wrong")
+  }
+
+  res.status(200).json(data)
+})
+
+export const getSentences = asyncHandler(async (req: Request, res: Response) => {
+  const { amount } = req.query 
+
+  const data = await Sentence.aggregate([{ $sample: { size: Number(amount) } }])
 
   if (!data) {
     res.status(400)
