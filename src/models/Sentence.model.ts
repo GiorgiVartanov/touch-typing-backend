@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose"
 
 export interface SentenceState {
-    sentence: string
+  sentence: string
 }
 
 export interface SentenceInterface extends SentenceState, Document {}

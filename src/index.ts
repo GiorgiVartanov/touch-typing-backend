@@ -14,6 +14,7 @@ import typingSettingsRoutes from "./routes/typingSettingRoutes"
 import userRoutes from "./routes/userRoutes"
 import matchRoutes from "./routes/matchRoutes"
 import LayoutRoutes from "./routes/layoutRoutes"
+import LessonRoutes from "./routes/lessonRoutes"
 
 dotenv.config()
 
@@ -45,6 +46,7 @@ app.use("/typingsettings", typingSettingsRoutes)
 app.use("/user", userRoutes)
 app.use("/match", matchRoutes)
 app.use("/layout", LayoutRoutes)
+app.use("/lesson", LessonRoutes)
 
 app.use(errorHandler)
 
