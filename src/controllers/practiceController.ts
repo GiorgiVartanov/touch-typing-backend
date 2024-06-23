@@ -227,7 +227,7 @@ export const getWords = asyncHandler(async (req: Request, res: Response) => {
 })
 
 export const getSentences = asyncHandler(async (req: Request, res: Response) => {
-  const { amount } = req.query 
+  const { amount } = req.query
 
   const data = await Sentence.aggregate([{ $sample: { size: Number(amount) } }])
 
