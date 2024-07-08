@@ -104,7 +104,6 @@ export const completeAssessment = asyncHandler(async (req: ProtectedRequest, res
 
   const { assessmentLevel, percentage } = req.body;
 
-  console.log(assessmentLevel)
 
   if (![1, 2, 3, 4, 5, 6].includes(Number(assessmentLevel))) {
     res.status(400);
