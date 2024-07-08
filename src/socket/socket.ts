@@ -4,7 +4,7 @@ import { v4 } from "uuid" //Purpose is to hide socket.id from other users. Also 
 import {
   FakeWordsProps,
   MatchState,
-  PlayerState,
+  PlayerMapState,
   RequestProps,
   SentencesProps,
   Timers,
@@ -18,6 +18,7 @@ import generateFakeWords from "../util/generateFakeWords"
 import Letter from "../models/Letter.model"
 import Word from "../models/Word.model"
 import Sentence from "../models/Sentence.model"
+import updateRating from "../util/updateRating"
 
 //Too MANY details... :OOOOOO
 export class ServerSocket {
@@ -108,12 +109,12 @@ export class ServerSocket {
               this.usernames[uid] = username
             }
           } catch (err) {
-            if (err.name === 'TokenExpiredError') {
+            if (err.name === "TokenExpiredError") {
               // Handle token expired error
-              console.error('Token has expired');
+              console.error("Token has expired")
             } else {
-                // Handle other errors
-                console.error('JWT verification failed:', err.message);
+              // Handle other errors
+              console.error("JWT verification failed:", err.message)
             }
           }
         }
@@ -166,7 +167,7 @@ export class ServerSocket {
         const uid = this.GetUidFromSocketID(socket.id)
         if (uid && this.user_to_match[uid] === undefined) {
           const match_id = v4()
-          const initial_players: PlayerState = {}
+          const initial_players: PlayerMapState = {}
           initial_players[uid] = {
             WPM: 0,
             has_finished: false,
@@ -354,6 +355,8 @@ export class ServerSocket {
 
           //If the match has finished, then add it to the DATABASE
           if (match_has_finished === true) {
+            //update the rating of the players
+            updateRating(this.sortTheDictionary(match_to_store.players))
             //list of users to be updated:
             //active players who want to see the result
             let keys = Object.keys(match_to_store.players).filter(
@@ -364,7 +367,7 @@ export class ServerSocket {
             //sort the user list by WPM:
             match_to_store.players = this.sortTheDictionary(match_to_store.players)
             //convert into a BeAuTiFul FoRm
-            const beautiful_dictionary: PlayerState = {}
+            const beautiful_dictionary: PlayerMapState = {}
             Object.values(match_to_store.players).forEach(
               (val) => (beautiful_dictionary[val.username] = { WPM: val.WPM })
             )
@@ -395,12 +398,12 @@ export class ServerSocket {
     return uids.map((id) => this.users[id])
   }
 
-  sortTheDictionary = (dict: PlayerState) => {
+  sortTheDictionary = (dict: PlayerMapState) => {
     let users_to_sort = Object.keys(dict).map((key) => {
       return { key: key, val: dict[key] }
     })
     users_to_sort.sort((a, b) => b.val.WPM - a.val.WPM)
-    let sorted_dictionary: PlayerState = {} as PlayerState
+    let sorted_dictionary: PlayerMapState = {} as PlayerMapState
     users_to_sort.forEach((el) => (sorted_dictionary[el.key] = el.val))
     return sorted_dictionary
   }
@@ -445,10 +448,9 @@ const generateText = async (req: RequestProps): Promise<string> => {
   } else if (req.type == "CorpusWords") {
     const data = await Word.aggregate([{ $sample: { size: req.amount } }])
     return data.map((el: { _id: string; word: string; count: number }) => el.word).join(" ")
-  }
-  else if(req.type == "Sentences") {
+  } else if (req.type == "Sentences") {
     const data = await Sentence.aggregate([{ $sample: { size: req.amount } }])
-    return data.map((el: { _id: string; sentence: string; }) => el.sentence).join(". ")
+    return data.map((el: { _id: string; sentence: string }) => el.sentence).join(". ")
   } else {
     console.log("request type not implemented")
     return ""
