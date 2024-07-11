@@ -93,7 +93,8 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         selectedLayout:layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,
-        completedAssessments: user.completedAssessments
+        completedAssessments: user.completedAssessments,
+        completedLessons: user.completedLessons
       },
       token: generateToken(user._id),
     })
@@ -148,7 +149,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         selectedLayout: layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,
-        completedAssessments: user.completedAssessments
+        completedAssessments: user.completedAssessments,
+        completedLessons: user.completedLessons
       },
       token: generateToken(user._id),
     })
