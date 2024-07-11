@@ -7,6 +7,7 @@ export interface UserInterface extends Document {
   accountType?: "User" | "Admin"
   pvpHistory: mongoose.Types.ObjectId[]
   createdLayouts: mongoose.Types.ObjectId[]
+  completedAssessments: number[]
   selectedLayout: {
     Eng: mongoose.Types.ObjectId,
     Geo: mongoose.Types.ObjectId,
@@ -43,6 +44,11 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     type: String,
     required: true,
     enum: ["User", "Admin"],
+  },
+  completedAssessments: {
+    type: [Number],
+    required: false,
+    default: []
   },
   pvpHistory: [
     {

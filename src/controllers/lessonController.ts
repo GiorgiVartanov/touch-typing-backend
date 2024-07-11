@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler"
 import { Request, Response } from "express"
+import { ProtectedRequest } from "../middleware/authMiddleware"
 
+import User from "../models/User.model"
 import Lesson from "../models/Lesson.model"
 import generateExercise from "../util/generateExercise"
 import permuteArrayInPlace from "../util/permuteArrayInPlace"
@@ -90,4 +92,34 @@ export const getAssessment = asyncHandler(async (req: Request, res: Response) =>
   permuteArrayInPlace(assessment_data.words)
 
   res.status(200).json(assessment_data.words.slice(0, 100).join(" "))
+})
+
+export const completeAssessment = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user;
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not authenticated");
+  }
+
+  const { assessmentLevel, percentage } = req.body;
+
+
+  if (![1, 2, 3, 4, 5, 6].includes(Number(assessmentLevel))) {
+    res.status(400);
+    throw new Error("Invalid assessment level provided");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { $addToSet: { completedAssessments: assessmentLevel } },
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.status(200).json(updatedUser.completedAssessments);
 })
