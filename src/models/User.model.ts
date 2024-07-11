@@ -8,6 +8,7 @@ export interface UserInterface extends Document {
   pvpHistory: mongoose.Types.ObjectId[]
   createdLayouts: mongoose.Types.ObjectId[]
   completedAssessments: number[]
+  completedLessons: string[]
   selectedLayout: {
     Eng: mongoose.Types.ObjectId,
     Geo: mongoose.Types.ObjectId,
@@ -47,6 +48,11 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   },
   completedAssessments: {
     type: [Number],
+    required: false,
+    default: []
+  },
+  completedLessons: {
+    type: [String],
     required: false,
     default: []
   },

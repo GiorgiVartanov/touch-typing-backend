@@ -123,3 +123,33 @@ export const completeAssessment = asyncHandler(async (req: ProtectedRequest, res
 
   res.status(200).json(updatedUser.completedAssessments);
 })
+
+export const completeLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user;
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not authenticated");
+  }
+
+  const { lessonLetter, percentage } = req.body;
+
+
+  if (!georgianLetters.includes(lessonLetter)) {
+    res.status(400);
+    throw new Error("Invalid assessment level provided");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { $addToSet: { completedLessons: lessonLetter } },
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.status(200).json(updatedUser.completedLessons);
+})
