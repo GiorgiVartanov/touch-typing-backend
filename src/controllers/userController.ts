@@ -11,7 +11,7 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findOne({ username: username })
 
-  const createdLayouts = await Layout.find({ _id: { $in: user.createdLayouts } });
+  const createdLayouts = await Layout.find({ _id: { $in: user.createdLayouts } })
 
   const userToSend = {
     username: user.username,
@@ -69,4 +69,17 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
   const usernames = users.map((user) => user.username)
 
   res.status(200).json({ data: usernames, message: "users successfully fetched" })
+})
+
+export const getAllUsersWithRating = asyncHandler(async (req: Request, res: Response) => {
+  const users = await User.find()
+
+  const usersnames_and_rating = users.reduce((accumulate, item) => {
+    accumulate.push({ username: item.username, rating: item.rating })
+    return accumulate
+  }, [])
+
+  res
+    .status(200)
+    .json({ data: usersnames_and_rating, message: "all the users have successfuly been fetched" })
 })
