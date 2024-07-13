@@ -95,31 +95,59 @@ export const getAssessment = asyncHandler(async (req: Request, res: Response) =>
 })
 
 export const completeAssessment = asyncHandler(async (req: ProtectedRequest, res: Response) => {
-  const user = req.user;
+  const user = req.user
 
   if (!user) {
-    res.status(401);
-    throw new Error("User not authenticated");
+    res.status(401)
+    throw new Error("User not authenticated")
   }
 
-  const { assessmentLevel, percentage } = req.body;
-
+  const { assessmentLevel, percentage } = req.body
 
   if (![1, 2, 3, 4, 5, 6].includes(Number(assessmentLevel))) {
-    res.status(400);
-    throw new Error("Invalid assessment level provided");
+    res.status(400)
+    throw new Error("Invalid assessment level provided")
   }
 
   const updatedUser = await User.findByIdAndUpdate(
     user._id,
     { $addToSet: { completedAssessments: assessmentLevel } },
-    { new: true } 
-  );
+    { new: true }
+  )
 
   if (!updatedUser) {
-    res.status(404);
-    throw new Error("User not found");
+    res.status(404)
+    throw new Error("User not found")
   }
 
-  res.status(200).json(updatedUser.completedAssessments);
+  res.status(200).json(updatedUser.completedAssessments)
+})
+
+export const completeLesson = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const user = req.user
+
+  if (!user) {
+    res.status(401)
+    throw new Error("User not authenticated")
+  }
+
+  const { lessonLetter, percentage } = req.body
+
+  if (!georgianLetters.includes(lessonLetter)) {
+    res.status(400)
+    throw new Error("Invalid assessment level provided")
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { $addToSet: { completedLessons: lessonLetter } },
+    { new: true }
+  )
+
+  if (!updatedUser) {
+    res.status(404)
+    throw new Error("User not found")
+  }
+
+  res.status(200).json(updatedUser.completedLessons)
 })

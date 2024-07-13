@@ -4,6 +4,20 @@ import asyncHandler from "express-async-handler"
 import User from "../models/User.model"
 import Layout from "../models/Layout.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
+import jwt from "jsonwebtoken"
+
+const getUserFromToken = async (req: Request) => {
+  const token = req.headers.authorization?.split(" ")[1] // Assuming the token is sent as "Bearer <token>"
+  if (!token) return null
+
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string)
+    const user = await User.findById(decoded.id)
+    return user
+  } catch (error) {
+    return null
+  }
+}
 
 // gets user's data
 export const getUser = asyncHandler(async (req: Request, res: Response) => {
@@ -82,4 +96,23 @@ export const getAllUsersWithRating = asyncHandler(async (req: Request, res: Resp
   res
     .status(200)
     .json({ data: usersnames_and_rating, message: "all the users have successfuly been fetched" })
+})
+
+export const incrementLayoutCounter = asyncHandler(async (req: Request, res: Response) => {
+  console.log("got in here")
+  const user = await getUserFromToken(req)
+  console.log("out of here")
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" })
+    return
+  }
+  console.log(user)
+  user.createdLayoutCounter = (user.createdLayoutCounter || 0) + 1
+
+  await user.save()
+
+  res.status(200).json({
+    message: "Layout counter incremented successfully",
+    createdLayoutCounter: user.createdLayoutCounter,
+  })
 })

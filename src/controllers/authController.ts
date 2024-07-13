@@ -77,11 +77,10 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     accountType: "User",
   })
 
-
   const geoLayout = await Layout.findById(user.selectedLayout.Geo)
   const enLayout = await Layout.findById(user.selectedLayout.Eng)
 
-  const layout = { Geo:geoLayout, Eng:enLayout }
+  const layout = { Geo: geoLayout, Eng: enLayout }
 
   if (user) {
     res.status(201).json({
@@ -90,10 +89,12 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         username: user.username,
         accountType: user.accountType,
         pvpHistory: user.pvpHistory,
-        selectedLayout:layout,
+        selectedLayout: layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,
-        completedAssessments: user.completedAssessments
+        completedAssessments: user.completedAssessments,
+        completedLessons: user.completedLessons,
+        createdLayoutCounter: user.createdLayoutCounter,
       },
       token: generateToken(user._id),
     })
@@ -137,7 +138,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     const geoLayout = await Layout.findById(user.selectedLayout.Geo)
     const enLayout = await Layout.findById(user.selectedLayout.Eng)
 
-    const layout = { Geo:geoLayout, Eng:enLayout }
+    const layout = { Geo: geoLayout, Eng: enLayout }
 
     res.status(201).json({
       user: {
@@ -148,7 +149,9 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         selectedLayout: layout,
         appSettings: user.appSettings,
         typingSettings: user.typingSettings,
-        completedAssessments: user.completedAssessments
+        completedAssessments: user.completedAssessments,
+        completedLessons: user.completedLessons,
+        createdLayoutCounter: user.createdLayoutCounter,
       },
       token: generateToken(user._id),
     })

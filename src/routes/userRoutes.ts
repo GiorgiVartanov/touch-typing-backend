@@ -3,10 +3,16 @@ import protect from "../middleware/authMiddleware"
 
 const router: Router = express.Router()
 
-import { getUser, getUsers, getAllUsersWithRating } from "../controllers/userController"
+import {
+  getUser,
+  getUsers,
+  getAllUsersWithRating,
+  incrementLayoutCounter,
+} from "../controllers/userController"
 
 router.get("/search", getUsers)
-router.get("/rating", getAllUsersWithRating)
+router.get("rating", getAllUsersWithRating)
+router.post("/incrementLayoutCounter", incrementLayoutCounter)
 router.get("/:username", getUser)
 
 export default router

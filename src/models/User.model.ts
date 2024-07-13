@@ -8,9 +8,11 @@ export interface UserInterface extends Document {
   pvpHistory: mongoose.Types.ObjectId[]
   createdLayouts: mongoose.Types.ObjectId[]
   completedAssessments: number[]
+  completedLessons: string[]
+  createdLayoutCounter: number
   selectedLayout: {
-    Eng: mongoose.Types.ObjectId,
-    Geo: mongoose.Types.ObjectId,
+    Eng: mongoose.Types.ObjectId
+    Geo: mongoose.Types.ObjectId
   }
   typingSettings: {
     selectedFont: "sans" | "serif" | "sanet"
@@ -48,7 +50,12 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   completedAssessments: {
     type: [Number],
     required: false,
-    default: []
+    default: [],
+  },
+  completedLessons: {
+    type: [String],
+    required: false,
+    default: [],
   },
   pvpHistory: [
     {
@@ -56,24 +63,29 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
       ref: "PvPMatch",
     },
   ],
+  createdLayoutCounter: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
   selectedLayout: {
     Eng: {
       type: Schema.Types.ObjectId,
       ref: "Layout",
-      default: "661a4f84ba6289bbe8874fbf"
+      default: "661a4f84ba6289bbe8874fbf",
     },
     Geo: {
       type: Schema.Types.ObjectId,
       ref: "Layout",
-      default: "661a4f9bba6289bbe8874fc1"
-    }
+      default: "661a4f9bba6289bbe8874fc1",
+    },
   },
   createdLayouts: [
     {
-    type: Schema.Types.ObjectId,
-    ref: "Layout",
-  }
-],
+      type: Schema.Types.ObjectId,
+      ref: "Layout",
+    },
+  ],
   typingSettings: {
     font: {
       type: String,
@@ -88,17 +100,17 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     keyboardLanguage: {
       type: String,
       default: "Geo",
-      enum: ["Eng", "Geo"]
+      enum: ["Eng", "Geo"],
     },
     keyboardType: {
       type: String,
       default: "ANSI",
-      enum: ["ANSI" , "ANSI-ISO" , "ISO"]
+      enum: ["ANSI", "ANSI-ISO", "ISO"],
     },
     keyboardSize: {
       type: String,
       default: "medium",
-      enum: ["small" , "medium" , "large"]
+      enum: ["small", "medium", "large"],
     },
     showColoredKeys: {
       type: Boolean,
@@ -107,7 +119,7 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
     showKeyboardWhileTyping: {
       type: Boolean,
       default: true,
-    }
+    },
   },
   appSettings: {
     language: {
