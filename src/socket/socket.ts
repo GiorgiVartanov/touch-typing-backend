@@ -4,7 +4,7 @@ import { v4 } from "uuid" //Purpose is to hide socket.id from other users. Also 
 import {
   FakeWordsProps,
   MatchState,
-  PlayerState,
+  PlayerMapState,
   RequestProps,
   SentencesProps,
   Timers,
@@ -18,6 +18,7 @@ import generateFakeWords from "../util/generateFakeWords"
 import Letter from "../models/Letter.model"
 import Word from "../models/Word.model"
 import Sentence from "../models/Sentence.model"
+import updateRating from "../util/updateRating"
 
 //Too MANY details... :OOOOOO
 export class ServerSocket {
@@ -108,12 +109,12 @@ export class ServerSocket {
               this.usernames[uid] = username
             }
           } catch (err) {
-            if (err.name === 'TokenExpiredError') {
+            if (err.name === "TokenExpiredError") {
               // Handle token expired error
-              console.error('Token has expired');
+              console.error("Token has expired")
             } else {
-                // Handle other errors
-                console.error('JWT verification failed:', err.message);
+              // Handle other errors
+              console.error("JWT verification failed:", err.message)
             }
           }
         }
@@ -166,12 +167,19 @@ export class ServerSocket {
         const uid = this.GetUidFromSocketID(socket.id)
         if (uid && this.user_to_match[uid] === undefined) {
           const match_id = v4()
-          const initial_players: PlayerState = {}
+          const initial_players: PlayerMapState = {}
+          const creator_user = await User.findOne({ username: this.usernames[uid] })
+          let user_rating = 0
+          if (creator_user) {
+            user_rating = creator_user.rating
+          }
+
           initial_players[uid] = {
             WPM: 0,
             has_finished: false,
             username: this.usernames[uid],
             wants_to_see_result: true,
+            rating: user_rating,
           }
           this.matches[match_id] = {
             request: req,
@@ -210,11 +218,17 @@ export class ServerSocket {
         if (this.matches[match_id].has_started !== true) {
           //join as a player
           this.matches[match_id].active_players++
+          const joining_user = await User.findOne({ username: this.usernames[uid] })
+          let user_rating = 0
+          if (joining_user) {
+            user_rating = joining_user.rating
+          }
           this.matches[match_id].players[uid] = {
             WPM: 0,
             has_finished: false,
             username: this.usernames[uid],
             wants_to_see_result: true,
+            rating: user_rating,
           }
           keys.push(uid)
           if (keys.length === this.matches[match_id].user_limit) {
@@ -287,6 +301,7 @@ export class ServerSocket {
       }
     })
   }
+
   GetUidFromSocketID = (id: string) => {
     return Object.keys(this.users).find((uid) => this.users[uid] === id)
   }
@@ -354,6 +369,10 @@ export class ServerSocket {
 
           //If the match has finished, then add it to the DATABASE
           if (match_has_finished === true) {
+            //update the rating of the players
+            const users_for_rating_change = this.sortTheDictionary(match_to_store.players)
+            const rating_changes: number[] = updateRating(users_for_rating_change)
+
             //list of users to be updated:
             //active players who want to see the result
             let keys = Object.keys(match_to_store.players).filter(
@@ -364,9 +383,9 @@ export class ServerSocket {
             //sort the user list by WPM:
             match_to_store.players = this.sortTheDictionary(match_to_store.players)
             //convert into a BeAuTiFul FoRm
-            const beautiful_dictionary: PlayerState = {}
+            const beautiful_dictionary: PlayerMapState = {}
             Object.values(match_to_store.players).forEach(
-              (val) => (beautiful_dictionary[val.username] = { WPM: val.WPM })
+              (val) => (beautiful_dictionary[val.username] = { WPM: val.WPM, rating: val.rating })
             )
             match_to_store.players = beautiful_dictionary
             //save match to the database
@@ -378,6 +397,28 @@ export class ServerSocket {
             })
             //notify everyone about the match update.
             this.SendMessage("matches_modified", Object.values(this.users), this.matches)
+            let position = 0
+            console.log("rating changes: ", rating_changes)
+            for (const player in users_for_rating_change) {
+              if (users_for_rating_change[player].username) {
+                const user = await User.findOne({
+                  username: users_for_rating_change[player].username,
+                })
+                if (user) {
+                  console.log("Here", user.username, user.rating, rating_changes[position])
+                  await User.updateOne(
+                    { username: user.username },
+                    { $inc: { rating: rating_changes[position] } }
+                  )
+                  this.SendMessage(
+                    "rating_changes",
+                    this.getSocketIdsFromUids([player]),
+                    user.rating + rating_changes[position]
+                  )
+                }
+              }
+              ++position
+            }
             return
           }
         }
@@ -395,12 +436,12 @@ export class ServerSocket {
     return uids.map((id) => this.users[id])
   }
 
-  sortTheDictionary = (dict: PlayerState) => {
+  sortTheDictionary = (dict: PlayerMapState) => {
     let users_to_sort = Object.keys(dict).map((key) => {
       return { key: key, val: dict[key] }
     })
     users_to_sort.sort((a, b) => b.val.WPM - a.val.WPM)
-    let sorted_dictionary: PlayerState = {} as PlayerState
+    let sorted_dictionary: PlayerMapState = {} as PlayerMapState
     users_to_sort.forEach((el) => (sorted_dictionary[el.key] = el.val))
     return sorted_dictionary
   }
@@ -445,10 +486,9 @@ const generateText = async (req: RequestProps): Promise<string> => {
   } else if (req.type == "CorpusWords") {
     const data = await Word.aggregate([{ $sample: { size: req.amount } }])
     return data.map((el: { _id: string; word: string; count: number }) => el.word).join(" ")
-  }
-  else if(req.type == "Sentences") {
+  } else if (req.type == "Sentences") {
     const data = await Sentence.aggregate([{ $sample: { size: req.amount } }])
-    return data.map((el: { _id: string; sentence: string; }) => el.sentence).join(". ")
+    return data.map((el: { _id: string; sentence: string }) => el.sentence).join(". ")
   } else {
     console.log("request type not implemented")
     return ""

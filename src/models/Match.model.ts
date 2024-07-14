@@ -28,10 +28,10 @@ export interface SentencesProps {
   amount: number
 }
 
-export type RequestProps = FakeWordsProps | WordsProps | SentencesProps;
+export type RequestProps = FakeWordsProps | WordsProps | SentencesProps
 
 export interface MatchState {
-  players: PlayerState
+  players: PlayerMapState
   text: string
   time_limit: number
   user_limit: number
@@ -43,12 +43,15 @@ export interface MatchState {
 }
 
 export interface PlayerState {
-  [sid: string]: {
-    WPM: number
-    has_finished?: boolean
-    username?: string
-    wants_to_see_result?: boolean
-  }
+  WPM: number
+  has_finished?: boolean
+  username?: string
+  wants_to_see_result?: boolean
+  rating: number
+}
+
+export interface PlayerMapState {
+  [sid: string]: PlayerState
 }
 
 export interface MatchInterface extends MatchState, Document {}
@@ -59,6 +62,10 @@ const matchSchema: Schema<MatchInterface> = new Schema<MatchInterface>({
     of: new Schema(
       {
         WPM: {
+          type: Number,
+          required: true,
+        },
+        rating: {
           type: Number,
           required: true,
         },

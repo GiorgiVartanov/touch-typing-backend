@@ -85,6 +85,19 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ data: usernames, message: "users successfully fetched" })
 })
 
+export const getAllUsersWithRating = asyncHandler(async (req: Request, res: Response) => {
+  const users = await User.find()
+
+  const usersnames_and_rating = users.reduce((accumulate, item) => {
+    accumulate.push({ username: item.username, rating: item.rating })
+    return accumulate
+  }, [])
+
+  res
+    .status(200)
+    .json({ data: usersnames_and_rating, message: "all the users have successfuly been fetched" })
+})
+
 export const incrementLayoutCounter = asyncHandler(async (req: Request, res: Response) => {
   console.log("got in here")
   const user = await getUserFromToken(req)
