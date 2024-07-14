@@ -11,7 +11,7 @@ import {
 } from "../controllers/userController"
 
 router.get("/search", getUsers)
-router.get("rating", getAllUsersWithRating)
+router.get("/rating", getAllUsersWithRating)
 router.post("/incrementLayoutCounter", incrementLayoutCounter)
 router.get("/:username", getUser)
 

@@ -47,7 +47,7 @@ export interface PlayerState {
   has_finished?: boolean
   username?: string
   wants_to_see_result?: boolean
-  rating?: number
+  rating: number
 }
 
 export interface PlayerMapState {
@@ -62,6 +62,10 @@ const matchSchema: Schema<MatchInterface> = new Schema<MatchInterface>({
     of: new Schema(
       {
         WPM: {
+          type: Number,
+          required: true,
+        },
+        rating: {
           type: Number,
           required: true,
         },

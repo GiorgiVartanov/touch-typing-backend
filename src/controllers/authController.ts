@@ -95,6 +95,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         completedAssessments: user.completedAssessments,
         completedLessons: user.completedLessons,
         createdLayoutCounter: user.createdLayoutCounter,
+        rating: user.rating,
       },
       token: generateToken(user._id),
     })
@@ -152,6 +153,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         completedAssessments: user.completedAssessments,
         completedLessons: user.completedLessons,
         createdLayoutCounter: user.createdLayoutCounter,
+        rating: user.rating,
       },
       token: generateToken(user._id),
     })

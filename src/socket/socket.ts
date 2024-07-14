@@ -168,11 +168,18 @@ export class ServerSocket {
         if (uid && this.user_to_match[uid] === undefined) {
           const match_id = v4()
           const initial_players: PlayerMapState = {}
+          const creator_user = await User.findOne({ username: this.usernames[uid] })
+          let user_rating = 0
+          if (creator_user) {
+            user_rating = creator_user.rating
+          }
+
           initial_players[uid] = {
             WPM: 0,
             has_finished: false,
             username: this.usernames[uid],
             wants_to_see_result: true,
+            rating: user_rating,
           }
           this.matches[match_id] = {
             request: req,
@@ -211,11 +218,17 @@ export class ServerSocket {
         if (this.matches[match_id].has_started !== true) {
           //join as a player
           this.matches[match_id].active_players++
+          const joining_user = await User.findOne({ username: this.usernames[uid] })
+          let user_rating = 0
+          if (joining_user) {
+            user_rating = joining_user.rating
+          }
           this.matches[match_id].players[uid] = {
             WPM: 0,
             has_finished: false,
             username: this.usernames[uid],
             wants_to_see_result: true,
+            rating: user_rating,
           }
           keys.push(uid)
           if (keys.length === this.matches[match_id].user_limit) {
@@ -288,6 +301,7 @@ export class ServerSocket {
       }
     })
   }
+
   GetUidFromSocketID = (id: string) => {
     return Object.keys(this.users).find((uid) => this.users[uid] === id)
   }
@@ -356,7 +370,9 @@ export class ServerSocket {
           //If the match has finished, then add it to the DATABASE
           if (match_has_finished === true) {
             //update the rating of the players
-            updateRating(this.sortTheDictionary(match_to_store.players))
+            const users_for_rating_change = this.sortTheDictionary(match_to_store.players)
+            const rating_changes: number[] = updateRating(users_for_rating_change)
+
             //list of users to be updated:
             //active players who want to see the result
             let keys = Object.keys(match_to_store.players).filter(
@@ -369,7 +385,7 @@ export class ServerSocket {
             //convert into a BeAuTiFul FoRm
             const beautiful_dictionary: PlayerMapState = {}
             Object.values(match_to_store.players).forEach(
-              (val) => (beautiful_dictionary[val.username] = { WPM: val.WPM })
+              (val) => (beautiful_dictionary[val.username] = { WPM: val.WPM, rating: val.rating })
             )
             match_to_store.players = beautiful_dictionary
             //save match to the database
@@ -381,6 +397,28 @@ export class ServerSocket {
             })
             //notify everyone about the match update.
             this.SendMessage("matches_modified", Object.values(this.users), this.matches)
+            let position = 0
+            console.log("rating changes: ", rating_changes)
+            for (const player in users_for_rating_change) {
+              if (users_for_rating_change[player].username) {
+                const user = await User.findOne({
+                  username: users_for_rating_change[player].username,
+                })
+                if (user) {
+                  console.log("Here", user.username, user.rating, rating_changes[position])
+                  await User.updateOne(
+                    { username: user.username },
+                    { $inc: { rating: rating_changes[position] } }
+                  )
+                  this.SendMessage(
+                    "rating_changes",
+                    this.getSocketIdsFromUids([player]),
+                    user.rating + rating_changes[position]
+                  )
+                }
+              }
+              ++position
+            }
             return
           }
         }

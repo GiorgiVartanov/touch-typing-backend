@@ -41,6 +41,8 @@ const userSchema: Schema<UserInterface> = new Schema<UserInterface>({
   },
   rating: {
     type: Number,
+    required: true,
+    default: 0,
   },
   accountType: {
     type: String,
