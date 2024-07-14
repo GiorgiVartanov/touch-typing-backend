@@ -66,6 +66,7 @@ export const getExercise = asyncHandler(async (req: Request, res: Response) => {
   const data = generateExercise({
     word_array_1: only_letter_syllables.words,
     word_array_2: one_except_letter_syllables.words,
+    // change number on the next line to make lesson shorter
     subset_size: 25,
   })
 

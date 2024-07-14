@@ -16,6 +16,21 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
   const passwordError = []
   const confirmPasswordError = []
 
+  const allowedUsernameChars = [
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "_"
+  ];
+
+  const allowedPasswordChars = [
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "[", "]", "{", "}", "|", ";", ":", ",", ".", "<", ">", "?", "/"
+  ];
+
+
   if (!username) {
     usernameError.push("Please add username")
   }
@@ -28,25 +43,33 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     confirmPasswordError.push("Please confirm password")
   }
 
-  if (username.length < 6) {
+  if (username.length < 3) {
     usernameError.push("Username is too short")
   }
 
-  if (username.length > 24) {
+  if (username.length > 20) {
     usernameError.push("Username is too long")
   }
 
-  if (password.length < 6) {
+  if (password.length < 8) {
     passwordError.push("Password is too short")
   }
 
-  if (password.length > 40) {
+  if (password.length > 24) {
     passwordError.push("Password is too long")
   }
 
   if (password !== confirmPassword) {
     passwordError.push("passwords do not match")
     confirmPasswordError.push("passwords do not match")
+  }
+
+  if (username.split('').some(char => !allowedUsernameChars.includes(char))) {
+    usernameError.push("Username contains invalid characters")
+  }
+
+  if (password.split('').some(char => !allowedPasswordChars.includes(char))) {
+    passwordError.push("Password contains invalid characters")
   }
 
   // check if user exists

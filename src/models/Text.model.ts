@@ -21,7 +21,7 @@ const textSchema: Schema<TextInterface> = new Schema<TextInterface>({
   language: {
     type: String,
     required: false,
-    default: "Eng"
+    default: "Geo"
   },
   description: {
     type: String,
