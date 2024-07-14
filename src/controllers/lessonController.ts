@@ -67,7 +67,7 @@ export const getExercise = asyncHandler(async (req: Request, res: Response) => {
     word_array_1: only_letter_syllables.words,
     word_array_2: one_except_letter_syllables.words,
     // change number on the next line to make lesson shorter
-    subset_size: 25,
+    subset_size: 1,
   })
 
   res.status(200).json(data)
@@ -92,7 +92,7 @@ export const getAssessment = asyncHandler(async (req: Request, res: Response) =>
 
   permuteArrayInPlace(assessment_data.words)
 
-  res.status(200).json(assessment_data.words.slice(0, 100).join(" "))
+  res.status(200).json(assessment_data.words.slice(0, 2).join(" "))
 })
 
 export const completeAssessment = asyncHandler(async (req: ProtectedRequest, res: Response) => {

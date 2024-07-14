@@ -32,6 +32,7 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
     selectedLayout: user.selectedLayout,
     createdLayouts: createdLayouts,
     accountType: user.accountType,
+    rating: user.rating,
   }
 
   if (!user) {
