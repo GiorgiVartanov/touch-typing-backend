@@ -1,4 +1,3 @@
-// generated fake words for a passed props
 const generateFakeWords = (
   data: {
     letter: string
