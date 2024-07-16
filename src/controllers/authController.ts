@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import asyncHandler from "express-async-handler"
 
-import { ProtectedRequest } from "../middleware/authMiddleware"
-
 import Layout from "../models/Layout.model"
 import User from "../models/User.model"
 
@@ -17,19 +15,160 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
   const confirmPasswordError = []
 
   const allowedUsernameChars = [
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-    "_"
-  ];
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "_",
+  ]
 
   const allowedPasswordChars = [
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-    "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "[", "]", "{", "}", "|", ";", ":", ",", ".", "<", ">", "?", "/"
-  ];
-
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "!",
+    "@",
+    "#",
+    "$",
+    "%",
+    "^",
+    "&",
+    "*",
+    "(",
+    ")",
+    "_",
+    "+",
+    "[",
+    "]",
+    "{",
+    "}",
+    "|",
+    ";",
+    ":",
+    ",",
+    ".",
+    "<",
+    ">",
+    "?",
+    "/",
+  ]
 
   if (!username) {
     usernameError.push("Please add username")
@@ -64,11 +203,11 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     confirmPasswordError.push("passwords do not match")
   }
 
-  if (username.split('').some(char => !allowedUsernameChars.includes(char))) {
+  if (username.split("").some((char) => !allowedUsernameChars.includes(char))) {
     usernameError.push("Username contains invalid characters")
   }
 
-  if (password.split('').some(char => !allowedPasswordChars.includes(char))) {
+  if (password.split("").some((char) => !allowedPasswordChars.includes(char))) {
     passwordError.push("Password contains invalid characters")
   }
 

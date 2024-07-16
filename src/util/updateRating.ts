@@ -1,4 +1,4 @@
-import { MatchState, PlayerMapState, PlayerState } from "../models/Match.model"
+import { PlayerMapState, PlayerState } from "../models/Match.model"
 
 const updateRating = (players: PlayerMapState): number[] => {
   let position = 1
@@ -6,9 +6,7 @@ const updateRating = (players: PlayerMapState): number[] => {
   for (const player in players) {
     let expected_position = calculateExpectedPosition(player, players)
     let added_rating = ((expected_position - position) * 100) / Object.keys(players).length
-    console.log(
-      `expected positon: ${expected_position}, real position: ${position}, rating: ${players[player].rating}`
-    )
+
     rating_changes.push(added_rating)
     ++position
   }

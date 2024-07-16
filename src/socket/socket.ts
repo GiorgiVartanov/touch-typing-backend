@@ -1,16 +1,7 @@
 import { Server as HttpServer } from "http"
 import { Socket, Server } from "socket.io"
 import { v4 } from "uuid" //Purpose is to hide socket.id from other users. Also to assign a unique id to each active game.
-import {
-  FakeWordsProps,
-  MatchState,
-  PlayerMapState,
-  RequestProps,
-  SentencesProps,
-  Timers,
-  WordsProps,
-  id_list,
-} from "../models/Match.model"
+import { MatchState, PlayerMapState, RequestProps, Timers, id_list } from "../models/Match.model"
 import Match from "../models/Match.model"
 import jwt from "jsonwebtoken"
 import User from "../models/User.model"
@@ -123,7 +114,6 @@ export class ServerSocket {
           //For guests...
           this.usernames[uid] = this.generateUserName(uid)
         const users = Object.values(this.users)
-        //const games = Object.values(this.games);
         callback(this.usernames[uid], uid, users, undefined, this.matches)
 
         this.SendMessage(
@@ -398,14 +388,12 @@ export class ServerSocket {
             //notify everyone about the match update.
             this.SendMessage("matches_modified", Object.values(this.users), this.matches)
             let position = 0
-            console.log("rating changes: ", rating_changes)
             for (const player in users_for_rating_change) {
               if (users_for_rating_change[player].username) {
                 const user = await User.findOne({
                   username: users_for_rating_change[player].username,
                 })
                 if (user) {
-                  console.log("Here", user.username, user.rating, rating_changes[position])
                   await User.updateOne(
                     { username: user.username },
                     { $inc: { rating: rating_changes[position] } }
@@ -448,7 +436,6 @@ export class ServerSocket {
 
   insertTimer = (match_id: string, duration: number): void => {
     this.timers[match_id] = setTimeout(() => {
-      console.log("match finished")
       if (match_id in this.timers) {
         //in case match finishes before the timeout.
         for (const uid in this.matches[match_id].players) {
@@ -473,7 +460,6 @@ export class ServerSocket {
 const generateText = async (req: RequestProps): Promise<string> => {
   if (req.type == "FakeWords") {
     const letterItem = await Letter.findOne({ letter: req.letter })
-    console.log(req)
     const fakeWords = generateFakeWords(
       letterItem,
       req.amount,

@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import asyncHandler from "express-async-handler"
 import { LayoutInterface } from "../models/Layout.model"
 import { ProtectedRequest } from "../middleware/authMiddleware"
-import {  isValidObjectId } from "mongoose"
+import { isValidObjectId } from "mongoose"
 
 import Layout from "../models/Layout.model"
 import User from "../models/User.model"
@@ -22,9 +22,9 @@ export const getLayout = asyncHandler(async (req: Request, res: Response) => {
       title: data.title,
       public: data.public,
       official: data.official,
-      creator: user?.username || null
+      creator: user?.username || null,
     }
-    
+
     res.status(200).json(dataToSend)
   } catch (error) {
     res.status(400)
@@ -38,22 +38,18 @@ export const getSelectedLayout = asyncHandler(async (req: ProtectedRequest, res:
   const geoLayout = await Layout.findById(user.selectedLayout.Geo)
   const enLayout = await Layout.findById(user.selectedLayout.Eng)
 
-  const layout = { Geo:geoLayout, Eng:enLayout }
+  const layout = { Geo: geoLayout, Eng: enLayout }
 
   try {
     res.status(200).json(layout)
   } catch (error) {
     res.status(400)
     throw new Error(error)
-  } 
+  }
 })
 
-export const getLayouts = asyncHandler(async(req: Request, res: Response) => {
-  const {
-    text,
-    language,
-    page,
-  } = req.query
+export const getLayouts = asyncHandler(async (req: Request, res: Response) => {
+  const { text, language, page } = req.query
 
   const pageSize = 20
 
@@ -92,19 +88,19 @@ export const getLayouts = asyncHandler(async(req: Request, res: Response) => {
   res.status(200).json({ data, pagination: { totalPages, currentPage, nextPage, hasNextPage } })
 })
 
-export const selectLayout = asyncHandler(async(req: ProtectedRequest, res: Response) => {
+export const selectLayout = asyncHandler(async (req: ProtectedRequest, res: Response) => {
   const user = req.user
 
-  const {id, language} = req.body
+  const { id, language } = req.body
 
   const availableLanguages = ["Eng", "Geo"]
 
-  if(!isValidObjectId(id)) {
+  if (!isValidObjectId(id)) {
     res.status(400)
     throw new Error("Passed id is not valid")
   }
 
-  if(!availableLanguages.includes(language)) {
+  if (!availableLanguages.includes(language)) {
     res.status(400)
     throw new Error("Wrong language")
   }
@@ -118,13 +114,13 @@ export const selectLayout = asyncHandler(async(req: ProtectedRequest, res: Respo
   }
 })
 
-export const addLayout = asyncHandler(async(req: ProtectedRequest, res:Response) => {
-  const { layout: {keyboard, language, title} } = req.body
+export const addLayout = asyncHandler(async (req: ProtectedRequest, res: Response) => {
+  const {
+    layout: { keyboard, language, title },
+  } = req.body
   const user = req.user
 
-  console.log(keyboard[0])
-
-   if(keyboard.length !== 61) {
+  if (keyboard.length !== 61) {
     res.status(400)
     throw new Error("something went wrong")
   }
@@ -134,11 +130,11 @@ export const addLayout = asyncHandler(async(req: ProtectedRequest, res:Response)
       keyboard: keyboard,
       language: language,
       title: title,
-      public: false, // make it changeable 
+      public: false, // make it changeable
       official: false,
       creator: user._id,
     })
-  
+
     user.createdLayouts = [...user.createdLayouts, newLayout._id]
 
     await user.save()

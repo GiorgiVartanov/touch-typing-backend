@@ -3,7 +3,6 @@ import asyncHandler from "express-async-handler"
 
 import User from "../models/User.model"
 import Layout from "../models/Layout.model"
-import { ProtectedRequest } from "../middleware/authMiddleware"
 import jwt from "jsonwebtoken"
 
 const getUserFromToken = async (req: Request) => {
@@ -100,14 +99,12 @@ export const getAllUsersWithRating = asyncHandler(async (req: Request, res: Resp
 })
 
 export const incrementLayoutCounter = asyncHandler(async (req: Request, res: Response) => {
-  console.log("got in here")
   const user = await getUserFromToken(req)
-  console.log("out of here")
+
   if (!user) {
     res.status(401).json({ error: "Unauthorized" })
     return
   }
-  console.log(user)
   user.createdLayoutCounter = (user.createdLayoutCounter || 0) + 1
 
   await user.save()
